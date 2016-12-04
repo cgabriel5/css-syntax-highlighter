@@ -26,7 +26,7 @@
         <div id="content-wrapper" class="content-wrapper">
             <div id="content" class="content responsive-width">
                 <div id="explanation">
-                    <div class="label">How It Works</div>
+                    <div class="label">CSS Syntax Highlighting</div>
                     <div class="paragraph">The CSS highlighter will parse the provided CSS and add syntax highlighting. The example below gives an idea of how the highlighted CSS will look like.</div>
                     <div class="css-example">
                         <pre><code class="custom-css lang-css-syntax">/* random characters and CSS data types */
@@ -34,9 +34,9 @@
 content: ?"some"?@media \#12;3?" ::
 "?@media "somehing" !important; 1
 
-/*a comment*/ rgba(1, 1,1, .5) 22px html
+/*a comment*/ rgba(1, 1, 1, .5) 22px html
 this is my clas s-
-.class.red .green.yello #red
+.class.red .green.yellow #red
 
 div span aliceblue display
 -webkit-background
@@ -44,8 +44,8 @@ div span aliceblue display
 ^= -= >
 #343
 
-rgba(1, 1,1, 1.5)
-rgba(1, 1,1, 5.) ::after ::before + ~ a
+rgba(1, 1, 1, 1.5)
+rgba(1, 1, 1, 5.) ::after ::before + ~ a
 |=a |a a>>
 div::selection
 
@@ -58,7 +58,7 @@ li:not(.first-item):not(:last-of-type) {
 
 ol :nth-last-child(2n+6) {
     color: orange;
-    border: 2px solid black;
+    border: 2px solid black !important;
 }
 
 ol > :nth-last-child(even) {
@@ -67,7 +67,20 @@ ol > :nth-last-child(even) {
 
 p:nth-last-of-type(2) {
     color: orange;
-}</code></pre>
+}
+
+.one li:nth-of-type(1) {
+  background: lightsteelblue;
+}
+
+.two li:nth-of-type(odd) {
+  background: lightsteelblue;
+}
+
+.three li:nth-of-type(3n+2) {
+  background: lightsteelblue;
+}
+</code></pre>
                         <!-- <pre><code class="custom-css"><span class="css-comment">/* example CSS */</span>
 <span class="css-class">.my-class</span> {
     background: <span class="css-keyword">red</span>;

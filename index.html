@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="css/styles.css" rel="stylesheet">
+    <!-- nice google fonts: raleway, work sans, open sans, lato, oxygen -->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <script src="js/app.js"></script>
+    <title>CSS Syntax Highlighter</title>
+</head>
+
+<body>
+    <div id="container" class="container responsive-width">
+        <!--         <div class="head-wrapper">
+            <div id="head" class="head responsive-width">
+                <div id="logo">
+                    <span class="pill"></span>
+                </div>
+                <div id="tagline">
+                    <span class="tagline-text"></span>
+                </div>
+            </div>
+        </div> -->
+        <div id="content-wrapper" class="content-wrapper">
+            <div id="content" class="content responsive-width">
+                <div id="explanation">
+                    <div class="label">How It Works</div>
+                    <div class="paragraph">The CSS highlighter will parse the provided CSS and add syntax highlighting. The example below gives an idea of how the highlighted CSS will look like.</div>
+                    <div class="css-example">
+                        <pre><code class="custom-css lang-css-syntax">content: ?"some"?@media \#12;3?" ::
+"?@media "somehing" !important; 1
+
+/*a comment*/ rgba(1, 1,1, .5) 22px html
+this is my clas s-
+.class.red .green.yello #red
+
+div span aliceblue display
+-webkit-background
+
+^= -= >
+#343
+
+rgba(1, 1,1, 1.5)
+rgba(1, 1,1, 5.) ::after ::before + ~ a
+|=a |a a>>
+div::selection
+
+li:not(.first-item):not(:last-of-type) {
+    background: yellow;
+    color: black;
+}
+
+ol :nth-last-child(2n+6) {
+    color: orange;
+    border: 2px solid black;
+}
+
+ol > :nth-last-child(even) {
+    color: orange;
+}
+
+p:nth-last-of-type(2) {
+    color: orange;
+}</code></pre>
+                        <!-- <pre><code class="custom-css"><span class="css-comment">/* example CSS */</span>
+<span class="css-class">.my-class</span> {
+    background: <span class="css-keyword">red</span>;
+    padding: <span class="css-number">10</span><span class="css-unit">px</span>;
+    border-radius: <span class="css-number">3</span><span class="css-unit">px</span>;
+    background: <span class="css-keyword">lightgreen</span>;
+    display: <span class="css-value">flex</span>;
+}</code></pre>
+
+
+
+
+<pre><code class="custom-css"><span class="css-comment">/* duplicate(s) */</span>
+<span class="css-class">.my-class</span> {
+    <span class="highlight-dupe">background: <span class="css-keyword">red</span>;</span>
+    <span class="css-disabled">padding: <span class="css-number">10</span><span class="css-unit">px</span>;</span>
+    <span class="css-disabled">border-radius: <span class="css-number">3</span><span class="css-unit">px</span>;</span>
+    <span class="highlight-dupe">background: <span class="css-keyword">lightgreen</span>;</span>
+    <span class="css-disabled">display: <span class="css-value">flex</span>;</span>
+}</code></pre> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -4,7 +4,7 @@ var colornames = ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "b
 var functions = ["alpha", "annotation", "attr", "blur", "brightness", "calc", "character-variant", "circle", "contrast", "counter", "cross-fade", "cubic-bezier", "drop-shadow", "element", "ellipse", "fit-content", "format", "grayscale", "hsl", "hsla", "hue-rotate", "image", "image-set", "inset", "invert", "leader", "linear-gradient", "local", "matrix", "matrix3d", "minmax", "opacity", "ornaments", "perspective", "polygon", "radial-gradient", "rect", "repeat", "repeating-linear-gradient", "repeating-radial-gradient", "rgb", "rgba", "rotate", "rotate3d", "rotatex", "rotatey", "rotatez", "saturate", "scale", "scale3d", "scalex", "scaley", "scalez", "sepia", "skew", "skewx", "skewy", "steps", "styleset", "stylistic", "swash", "symbols", "target-counter", "target-counters", "target-text", "translate", "translate3d", "translatex", "translatey", "translatez", "url", "var", "dir", "lang", "not", "nth-child", "nth-last-child", "nth-last-of-type", "nth-of-type"];
 var tags = ["body", "html", "img", "base", "head", "link", "meta", "style", "title", "address", "article", "aside", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6", "hgroup", "nav", "section", "dd", "div", "dl", "dt", "figcaption", "figure", "hr", "li", "main", "ol", "p", "pre", "ul", "a", "abbr", "b", "bdi", "bdo", "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q", "rp", "rt", "rtc", "ruby", "s", "samp", "small", "span", "strong", "sub", "sup", "time", "u", "var", "wbr", "area", "audio", "map", "track", "video", "embed", "object", "param", "source", "canvas", "noscript", "script", "del", "ins", "caption", "col", "colgroup", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", "input", "label", "legend", "meter", "optgroup", "option", "output", "progress", "select", "textarea", "details", "dialog", "menu", "menuitem", "summary", "content", "element", "shadow", "template", "acronym", "applet", "basefont", "big", "blink", "center", "command", "content", "dir", "font", "frame", "frameset", "isindex", "keygen", "listing", "marquee", "multicol", "nextid", "noembed", "plaintext", "spacer", "strike", "tt", "xmp"];
 // https://developer.mozilla.org/en-US/docs/Web/CSS/time
-var units = ["dpi", "dppx", "deg", "em", "ex", "%", "px", "cm", "mm", "in", "pt", "pc", "ch", "rem", "vh", "vw", "vmin", "vmax", "s", "ms"];
+var units = ["n", "dpi", "dppx", "deg", "em", "ex", "%", "px", "cm", "mm", "in", "pt", "pc", "ch", "rem", "vh", "vw", "vmin", "vmax", "s", "ms"];
 // @-rules https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
 var atrules = ["charset", "import", "namespace", "media", "supports", "document", "page", "font-face", "keyframes", "viewport", "counter-style", "font-feature-values", "swash", "ornaments", "annotation", "stylistic", "styleset", "character-variant"];
 // http://www.w3schools.com/cssref/css_selectors.asp
@@ -24,6 +24,7 @@ var media_types = ["all", "aural", "braille", "embossed", "handheld", "print", "
 var media_features = ["aspect-ratio", "color", "color-index", "device-aspect-ratio", "device-height", "device-width", "grid", "height", "max-aspect-ratio", "max-color", "max-color-index", "max-device-aspect-ratio", "max-device-height", "max-device-width", "max-height", "max-monochrome", "max-resolution", "max-width", "min-aspect-ratio", "min-color", "min-color-index", "min-device-aspect-ratio", "min-device-width", "min-device-height", "min-height", "min-monochrome", "min-resolution", "min-width", "monochrome", "orientation", "overflow-block", "overflow-inline", "resolution", "scan", "update-frequency", "width"];
 // https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries
 var media_logicals = ["and", "not", "only"];
+var keywords = ["!important"];
 // add 1 to include the last letter character of wanted string
 var include_last_char = 1;
 var flags = {
@@ -198,6 +199,26 @@ function parser(string, mode) {
 
             }
 
+        } else if (char === "!" && -~["x-property-value"].indexOf(mode)) { // keywords
+
+            // get the forward index
+            var findex = forward(i, string, /[^a-z]/i);
+            // get the fastforwarded string
+            var keyword = string.substring(i, (findex + include_last_char));
+
+            // check if string is in allowed keywords
+            if (-~keywords.indexOf(keyword.toLowerCase())) {
+
+                // add to array
+                flags.parts.push([keyword, "keyword"]);
+                // placehold keyword
+                string = placehold(i, string, keyword);
+                // reset the index
+                i = new_index(i);
+                l = string.length;
+
+            }
+
         } else if (-~operators.indexOf(char) && -~["selector", "x-property-value"].indexOf(mode)) { // operators
 
             // check if the next character is an equal sign
@@ -269,8 +290,11 @@ function parser(string, mode) {
 
                 if (-~units.indexOf(unit)) {
 
+                    // check if "unit" is the nth selector
+                    var css_class = (unit !== "n" ? "unit" : "nth");
+
                     // add to array
-                    flags.parts.push([unit, "unit"]);
+                    flags.parts.push([unit, css_class]);
                     // placehold unit
                     string = placehold(i, string, unit);
                     // reset the index
@@ -403,8 +427,11 @@ function parser(string, mode) {
 
                 if (-~units.indexOf(unit)) {
 
+                    // check if "unit" is the nth selector
+                    var css_class = (unit !== "n" ? "unit" : "nth");
+
                     // add to array
-                    flags.parts.push([unit, "unit"]);
+                    flags.parts.push([unit, css_class]);
                     // placehold unit
                     string = placehold(i, string, unit);
                     // reset the index
@@ -485,8 +512,11 @@ function parser(string, mode) {
 
                 if (-~units.indexOf(unit)) {
 
+                    // check if "unit" is the nth selector
+                    var css_class = (unit !== "n" ? "unit" : "nth");
+
                     // add to array
-                    flags.parts.push([unit, "unit"]);
+                    flags.parts.push([unit, css_class]);
                     // placehold unit
                     string = placehold(i, string, unit);
                     // reset the index

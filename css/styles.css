@@ -203,7 +203,7 @@ textarea {
 /* custom colorizer css syntax colors */
 
 .lang-css-syntax {
-    color: #484848;
+    /*color: #484848;*/
     color: #5d5858;
     font-size: 15px;
 }
@@ -254,10 +254,13 @@ textarea {
 }
 
 .lang-css-property {
+    /*color: #a03c3c;*/
     color: #646069;
-    /*    box-shadow: 0px 0px 0px 2px #2964ec;
-    background: #FFF;
-    border-radius: 3px;*/
+    /*color: #848484;*/
+    background: white;
+    /*box-shadow: 0px 0px 0px 2px #2964ec;*/
+    /*background: #FFF;*/
+    /*border-radius: 3px;*/
 }
 
 .lang-css-operator {
@@ -298,6 +301,23 @@ textarea {
 
 .lang-css-nth {
     color: #A83887;
+}
+
+.lang-css-selector-alternating {
+    /*color: #A83887;*/
+    color: #484848;
+}
+
+.lang-css-attribute {
+    /*color: #A83887;*/
+    color: #484848;
+}
+
+.lang-css-highlight {
+    color: #333;
+    background: rgba(255, 204, 0, 0.45);
+    box-shadow: 0px 0px 0px 2px #ffcc00;
+    border-radius: 3px;
 }
 
 

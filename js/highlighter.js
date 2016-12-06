@@ -649,7 +649,7 @@ function parser(string, mode) {
                     }
                 } else if (mode === "x-property-value") { // anything part of a CSS declaration value
                     if (-~fonts.indexOf(str)) {
-                        type = "font";
+                        type = "fontname";
                     } else if (-~colornames.indexOf(str)) {
                         type = "colorname";
                     } else { // anything else gets the default color

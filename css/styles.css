@@ -76,5 +76,9 @@ body {
     width: 600px;
 }
 
+textarea {
+    display: none;
+}
+
 
 /* [----- CSS.SITE.STYLES.END -----] */

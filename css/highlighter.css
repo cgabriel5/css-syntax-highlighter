@@ -91,7 +91,8 @@ pre {
 }
 
 .lang-css-property {
-    color: #646069;
+    /*color: #646069;*/
+    color: #494949;
     background: #FFF;
 }
 

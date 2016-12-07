@@ -16,7 +16,7 @@ document.onreadystatechange = function() {
         // get the code element
         var element = document.getElementsByTagName("code")[0];
         // cache code element's innerHTML (CSS string)
-        var string = element.innerHTML;
+        var string = document.getElementsByTagName("textarea")[0].value;
 
         // create new web worker
         var worker = new Worker("js/highlighter.js");

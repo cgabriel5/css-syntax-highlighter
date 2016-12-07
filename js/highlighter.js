@@ -22,7 +22,7 @@
         "pseudos": [":active", ":after", ":any", ":before", ":checked", ":default", ":disabled", ":empty", ":enabled", ":file-upload-button", ":first", ":first-child", ":first-letter", ":first-line", ":first-of-type", ":focus", ":focus-inner", ":focus-inner", ":focus-inner", ":focus-inner", ":focusring", ":fullscreen", ":hover", ":in-range", ":indeterminate", ":inner-spin-button", ":invalid", ":last-child", ":last-of-type", ":left", ":link", ":only-child", ":only-of-type", ":optional", ":out-of-range", ":outer-spin-button", ":read-only", ":read-write", ":required", ":right", ":root", ":scope", ":search-cancel-button", ":search-decoration", ":selection", ":target", ":valid", ":visited"],
         // css property list: http://www.blooberry.com/indexdot/css/propindex/all.htm
         // unique array: http://stackoverflow.com/questions/6940103/how-do-i-make-an-array-with-unique-elements-i-e-remove-duplicates/23282067#23282067
-        "properties": ["accelerator", "align-content", "align-items", "align-self", "alignment-baseline", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "app-region", "appearance", "azimuth", "backface-visibility", "background", "background-attachment", "background-blend-mode", "background-clip", "background-color", "background-image", "background-origin", "background-position", "background-position-x", "background-position-y", "background-repeat", "background-size", "baseline-shift", "behavior", "binding", "border", "border-bottom", "border-bottom-color", "border-bottom-colors", "border-bottom-left-radius", "border-bottom-right-radius", "border-bottom-style", "border-bottom-width", "border-collapse", "border-color", "border-horizontal-spacing", "border-image", "border-image-outset", "border-image-repeat", "border-image-slice", "border-image-source", "border-image-width", "border-left", "border-left-color", "border-left-colors", "border-left-style", "border-left-width", "border-radius", "border-radius", "border-radius-bottomleft", "border-radius-bottomright", "border-radius-topleft", "border-radius-topright", "border-right", "border-right-color", "border-right-colors", "border-right-style", "border-right-width", "border-spacing", "border-style", "border-top", "border-top-color", "border-top-colors", "border-top-left-radius", "border-top-right-radius", "border-top-style", "border-top-width", "border-vertical-spacing", "border-width", "bottom", "box-align", "box-decoration-break", "box-direction", "box-flex", "box-flex-group", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "break-after", "break-before", "break-inside", "buffered-rendering", "caption-side", "clear", "clip", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-rendering", "column-count", "column-gap", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "content", "counter-increment", "counter-reset", "cue", "cue-after", "cue-before", "cursor", "cx", "cy", "d", "direction", "display", "dominant-baseline", "elevation", "empty-cells", "fill", "fill-opacity", "fill-rule", "filter", "flex-align", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-line-pack", "flex-order", "flex-pack", "flex-shrink", "flex-wrap", "float", "flood-color", "flood-opacity", "font", "font-family", "font-kerning", "font-size", "font-size-adjust", "font-smoothing", "font-stretch", "font-style", "font-variant", "font-variant-caps", "font-variant-ligatures", "font-variant-numeric", "font-weight", "height", "highlight", "hyphenate-character", "hyphens", "image-rendering", "ime-mode", "include-source", "isolation", "justify-content", "layer-background-color", "layer-background-image", "layout-flow", "layout-grid", "layout-grid-char", "layout-grid-char-spacing", "layout-grid-line", "layout-grid-mode", "layout-grid-type", "left", "letter-spacing", "lighting-color", "line-break", "line-clamp", "line-height", "list-style", "list-style-image", "list-style-position", "list-style-type", "locale", "margin", "margin-after-collapse", "margin-before-collapse", "margin-bottom", "margin-left", "margin-right", "margin-top", "marker-end", "marker-mid", "marker-offset", "marker-start", "marks", "mask", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position", "mask-repeat", "mask-size", "mask-type", "max-height", "max-width", "min-height", "min-width", "mix-blend-mode", "motion-offset", "motion-path", "motion-rotation", "object-fit", "object-position", "opacity", "opacity", "order", "orphans", "outline", "outline", "outline-color", "outline-color", "outline-offset", "outline-style", "outline-style", "outline-width", "outline-width", "overflow", "overflow-wrap", "overflow-x", "overflow-X", "overflow-y", "overflow-Y", "padding", "padding-bottom", "padding-left", "padding-right", "padding-top", "page", "page-break-after", "page-break-before", "page-break-inside", "paint-order", "pause", "pause-after", "pause-before", "perspective", "perspective-origin", "pitch", "pitch-range", "play-during", "pointer-events", "position", "print-color-adjust", "quotes", "r", "replace", "resize", "richness", "right", "rtl-ordering", "ruby-align", "ruby-overhang", "ruby-position", "rx", "ry", "scrollbar-3d-light-color", "scrollbar-arrow-color", "scrollbar-base-color", "scrollbar-dark-shadow-color", "scrollbar-face-color", "scrollbar-highlight-color", "scrollbar-shadow-color", "scrollbar-track-color", "set-link-source", "shape-image-threshold", "shape-margin", "shape-outside", "shape-rendering", "size", "speak", "speak-header", "speak-numeral", "speak-punctuation", "speech-rate", "stop-color", "stop-opacity", "stress", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "tab-size", "table-layout", "tap-highlight-color", "text-align", "text-align-last", "text-anchor", "text-autospace", "text-combine", "text-decoration", "text-decoration-skip", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-fill-color", "text-indent", "text-justify", "text-kashida-space", "text-orientation", "text-overflow", "text-rendering", "text-security", "text-shadow", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-transform", "text-underline-position", "top", "touch-action", "touch-callout", "transform", "transform-origin", "transform-style", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "unicode-bidi", "use-link-source", "user-drag", "user-focus", "user-input", "user-modify", "user-modify", "user-select", "user-select", "vector-effect", "vertical-align", "visibility", "voice-family", "volume", "white-space", "widows", "width", "will-change", "word-break", "word-spacing", "word-wrap", "writing-mode", "x", "y", "z-index", "zoom"],
+        "properties": ["accelerator", "align-content", "align-items", "align-self", "alignment-baseline", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "app-region", "appearance", "azimuth", "backface-visibility", "background", "background-attachment", "background-blend-mode", "background-clip", "background-color", "background-image", "background-origin", "background-position", "background-position-x", "background-position-y", "background-repeat", "background-size", "baseline-shift", "behavior", "binding", "border", "border-bottom", "border-bottom-color", "border-bottom-colors", "border-bottom-left-radius", "border-bottom-right-radius", "border-bottom-style", "border-bottom-width", "border-collapse", "border-color", "border-horizontal-spacing", "border-image", "border-image-outset", "border-image-repeat", "border-image-slice", "border-image-source", "border-image-width", "border-left", "border-left-color", "border-left-colors", "border-left-style", "border-left-width", "border-radius", "border-radius", "border-radius-bottomleft", "border-radius-bottomright", "border-radius-topleft", "border-radius-topright", "border-right", "border-right-color", "border-right-colors", "border-right-style", "border-right-width", "border-spacing", "border-style", "border-top", "border-top-color", "border-top-colors", "border-top-left-radius", "border-top-right-radius", "border-top-style", "border-top-width", "border-vertical-spacing", "border-width", "bottom", "box-align", "box-decoration-break", "box-direction", "box-flex", "box-flex-group", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "break-after", "break-before", "break-inside", "buffered-rendering", "caption-side", "clear", "clip", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-rendering", "column-count", "column-gap", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "content", "counter-increment", "counter-reset", "cue", "cue-after", "cue-before", "cursor", "cx", "cy", "d", "direction", "display", "dominant-baseline", "elevation", "empty-cells", "fill", "fill-opacity", "fill-rule", "filter", "flex-align", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-line-pack", "flex-order", "flex-pack", "flex-shrink", "flex-wrap", "float", "flood-color", "flood-opacity", "font", "font-family", "font-kerning", "font-size", "font-size-adjust", "font-smoothing", "font-stretch", "font-style", "font-variant", "font-variant-caps", "font-variant-ligatures", "font-variant-numeric", "font-weight", "height", "highlight", "hyphenate-character", "hyphens", "image-rendering", "ime-mode", "include-source", "interpolation-mode", "isolation", "justify-content", "layer-background-color", "layer-background-image", "layout-flow", "layout-grid", "layout-grid-char", "layout-grid-char-spacing", "layout-grid-line", "layout-grid-mode", "layout-grid-type", "left", "letter-spacing", "lighting-color", "line-break", "line-clamp", "line-height", "list-style", "list-style-image", "list-style-position", "list-style-type", "locale", "margin", "margin-after-collapse", "margin-before-collapse", "margin-bottom", "margin-left", "margin-right", "margin-top", "marker-end", "marker-mid", "marker-offset", "marker-start", "marks", "mask", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position", "mask-repeat", "mask-size", "mask-type", "max-height", "max-width", "min-height", "min-width", "mix-blend-mode", "motion-offset", "motion-path", "motion-rotation", "object-fit", "object-position", "opacity", "opacity", "order", "orphans", "outline", "outline", "outline-color", "outline-color", "outline-offset", "outline-style", "outline-style", "outline-width", "outline-width", "overflow", "overflow-wrap", "overflow-x", "overflow-X", "overflow-y", "overflow-Y", "padding", "padding-bottom", "padding-left", "padding-right", "padding-top", "page", "page-break-after", "page-break-before", "page-break-inside", "paint-order", "pause", "pause-after", "pause-before", "perspective", "perspective-origin", "pitch", "pitch-range", "play-during", "pointer-events", "position", "print-color-adjust", "quotes", "r", "replace", "resize", "richness", "right", "rtl-ordering", "ruby-align", "ruby-overhang", "ruby-position", "rx", "ry", "scrollbar-3d-light-color", "scrollbar-arrow-color", "scrollbar-base-color", "scrollbar-dark-shadow-color", "scrollbar-face-color", "scrollbar-highlight-color", "scrollbar-shadow-color", "scrollbar-track-color", "set-link-source", "shape-image-threshold", "shape-margin", "shape-outside", "shape-rendering", "size", "speak", "speak-header", "speak-numeral", "speak-punctuation", "speech-rate", "stop-color", "stop-opacity", "stress", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "tab-size", "table-layout", "tap-highlight-color", "text-align", "text-align-last", "text-anchor", "text-autospace", "text-combine", "text-decoration", "text-decoration-skip", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-fill-color", "text-indent", "text-justify", "text-kashida-space", "text-orientation", "text-overflow", "text-rendering", "text-security", "text-shadow", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-transform", "text-underline-position", "top", "touch-action", "touch-callout", "transform", "transform-origin", "transform-style", "transition", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "unicode-bidi", "use-link-source", "user-drag", "user-focus", "user-input", "user-modify", "user-modify", "user-select", "user-select", "vector-effect", "vertical-align", "visibility", "voice-family", "volume", "white-space", "widows", "width", "will-change", "word-break", "word-spacing", "word-wrap", "writing-mode", "x", "y", "z-index", "zoom"],
         // http://www.w3schools.com/cssref/css_websafe_db.fontnames.asp
         // https://www.granneman.com/webdev/coding/css/fonts-and-formatting/web-browser-font-defaults/
         "fontnames": ["Arial", "Courier", "cursive", "Georgia", "Helvetica", "Impact", "monospace", "sans-serif", "serif", "Tahoma", "Times", "Verdana"],
@@ -54,9 +54,8 @@
         "pair": null,
         "start": null,
         // selector/codeblock loop flags
-        "atsign": null,
-        "openbrace": null,
-        "bracecounter": null
+        "nested": null,
+        "nestedlevel": -1
     };
 
     /**
@@ -72,13 +71,15 @@
         // loop over string
         for (var i = 0, l = string.length; i < l; i++) {
 
+            if (i === -1) break; // used to stop infinite loop while debugging
+
             // cache the current character
             var char = string.charAt(i),
                 prev_char = string.charAt(i - 1),
                 next_char = string.charAt(i + 1);
 
             // skip current iteration on these characters
-            if (-~["`", " ", "\"", "'", "{", "}"].indexOf(char)) {
+            if (-~["`", " ", "\"", "'"].indexOf(char)) {
                 // fast forward index on ticks, as they are the placeholders
                 // therefore...set loop index to character after the ending tick
                 if (char === "`") i = string.indexOf("`", i + 1);
@@ -122,6 +123,48 @@
                     i = new_index(i);
                     l = string.length;
 
+                }
+
+                // check if atrule is a oneliner..if so skip
+                // simply skip this atrule as it is a oneliner function
+                // and does not contain an inner code block
+                if (!-~["charset", "import", "namespace"].indexOf(atrule)) {
+                    // set the nested flag
+                    flags.nested = true;
+                }
+
+            } else if (char === "{") {
+
+                // if the nested flag is set
+                if (flags.nested) {
+                    // increment nested level count
+                    flags.nestedlevel = flags.nestedlevel + 1;
+                    // turn off nested flag, no longer needed
+                    flags.nested = null;
+                } else {
+                    // this is a normal code block, not a nested atrule
+                    // get the ending brace and code block
+                    var ending_brace = string.indexOf("}", i + 1);
+                    // only get text bwteeen the braces, the code block, but
+                    // do not get the braces
+                    var text_between = string.substring(i + 1, ending_brace);
+                    // placehold codeblock here
+                    // add to array
+                    flags.parts.push([text_between, "block"]);
+                    // placehold block
+                    string = placehold((i + 1), string, text_between);
+                    // reset length and index
+                    i = new_index((i + 1));
+                    l = string.length;
+
+                }
+
+            } else if (char === "}") {
+
+                // if the nested count is present...reduce it by 1
+                if (flags.nestedlevel > -1) {
+                    // decrease nested level by 1
+                    flags.nestedlevel = flags.nestedlevel - 1;
                 }
 
             } else if (char === "(" && -~["selector", "x-property-value"].indexOf(mode)) { // functions
@@ -922,193 +965,6 @@
 
         ///////////////////////////
         ///////////////////////////
-
-        // distinguish between selectors and code blocks
-        for (var i = 0, l = string.length; i < l; i++) {
-
-            if (i === -1) break; // used to stop infinite loop while debugging
-
-            // cache the current character in loop
-            var char = string.charAt(i),
-                cb = null;
-
-            // look out for these characters: @, {, }, /*, */
-            if (-~["`", " ", "\"", "'"].indexOf(char)) {
-                // reset the loop index to the character after the ending tick
-                // and skip to the next loop iteration
-                if (char === "`") i = string.indexOf("`", i + 1);
-                // all other characters will just skip but not reset index
-                continue;
-
-                // check for atsigns
-            } else if (char === "@") { // character: @
-
-                // check to see that it is not a one-liner (i.e. @charset, @import, @namespace)
-                // get the index of the immediate space after the last letter
-                var space_index = string.indexOf(" ", (i + 1)),
-                    atrule_name = string.substring((i + 1), space_index);
-
-                // check if artule is a simple one-liner
-                if (-~["charset", "import", "namespace"].indexOf(atrule_name)) {
-
-                    // get the index of the next semicolon; meaning the end of the atrule
-                    // forward loop all the way to the position of the ending of atrule
-                    i = string.indexOf(";", (i + 1));
-
-                } else { // all other CSS atrules
-
-                    // get the index of the opening brace + set the brace_open flag
-                    flags.openbrace = string.indexOf("{", (i + 1));
-
-                    // there is no open brace...prevent an infinite loop and continue;
-                    if (flags.openbrace === -1) continue;
-
-                    // set the atsign flag
-                    flags.atsign = i;
-                    // set the brace counter
-                    flags.bracecounter = 1;
-                    // forward loop all the way to the position of the start brace
-                    i = flags.openbrace;
-
-                    // grab selector (text between atsign and open brace indices)
-                    var selector = string.substring(flags.atsign, flags.openbrace).trim();
-                    // keep track of the brace indices
-                    var brace_indices_track = [i];
-                    // the amount of nested (complex "@") levels
-                    var nested_levels = 0;
-
-                    // start parsing CSS code block...start by getting the next brace index
-                    while (flags.bracecounter) {
-
-                        // get the indices for the next open and closed brace
-                        var start_brace_index = string.indexOf("{", i + 1),
-                            end_brace_index = string.indexOf("}", i + 1);
-
-                        // place both indices into an array and then filter array to only
-                        // have numbers, -1 will be replaced with null, which will then
-                        // get pruned out with the filter function
-                        // filter(Number): http://stackoverflow.com/questions/281264/remove-empty-elements-from-an-array-in-javascript/2843625#2843625
-                        var brace_indices = [(!-~start_brace_index ? null : start_brace_index), (!-~end_brace_index ? null : end_brace_index)].filter(Number);
-
-                        // get the lowest index number. this index will be the
-                        // closest to the first open brace. if there is no brace at all,
-                        // null is returned in place of -1.
-                        var next_index = (brace_indices.length) ? Math.min.apply(null, brace_indices) : null;
-                        // get the last brace index from stored brace indices
-                        var last_index = brace_indices_track[brace_indices_track.length - 1];
-
-                        // increment index by 1 as we do not want to get the opening brace
-                        // only want what is between the braces
-                        var between_text_index = last_index + 1;
-
-                        // the text between the last and next brace points. depending on the braces
-                        // this could be a selector (simple "s" or complex "@":"x") or a CSS code block
-                        var text_between = string.substring(between_text_index, next_index);
-
-                        // get the brace character using the last and next index points
-                        var first_brace = string.charAt(last_index);
-                        var last_brace = string.charAt(next_index);
-
-                        // check if simple or complex, used later on
-                        // var type = (text_between.charAt(0) === "@") ? "x" : "s";
-
-                        // the types of possible brace match ups
-                        // { { --> Start of block (simple or complex)
-                        // { } --> CSS code block
-                        // } { --> End of code block, start of new code block
-                        // } } --> End of complex block
-
-                        // differentiate between brace match ups
-                        // if (first_brace === "{" && last_brace === "{") { // child selector
-                        // leave alone don't do anything
-                        // } else if (first_brace === "{" && last_brace === "}") { // code block
-                        if (first_brace === "{" && last_brace === "}") { // code block
-
-                            // set the codeblock flag to true
-                            cb = true;
-                            // add to array
-                            flags.parts.push([text_between, "block"]);
-                            // placehold block
-                            string = placehold(between_text_index, string, text_between);
-                            // reset length and index
-                            i = new_index(between_text_index);
-                            l = string.length;
-
-                            // placehold block
-                            // string = placehold(between_text_index, string, text_between);
-
-                        }
-                        // else if (first_brace === "}" && last_brace === "{") { // end of code block, start of new code block
-                        // leave alone don't do anything
-                        // } else if (first_brace === "}" && last_brace === "}") { // end of complex code block
-                        // leave alone don't do anything
-                        // }
-
-                        // add the next brace point to track track it
-                        brace_indices_track.push(next_index);
-
-                        // if the index matches the start brace "{", increase the brace counter
-                        if (start_brace_index === next_index) flags.bracecounter++;
-                        // else if the brace is a closing brace "}", decrease the brace counter
-                        else if (end_brace_index === next_index) flags.bracecounter--;
-
-                        // forward loop index to the next brace position
-                        if (!cb) {
-                            i = next_index;
-                        } else {
-                            cb = null; // turn flag off
-                        }
-
-                        // if no more braces are found end the while loop by unsetting the
-                        // flags.bracecounter flag
-                        if (flags.bracecounter === 0) flags.bracecounter = null; // unset flag
-
-                    }
-
-                    // unset the flag atsign
-                    flags.atsign = null;
-
-                }
-
-                // check for braces, this is for simple code blocks
-            } else if (char === "{") { // character: {
-
-                // get the indices for the previous closed brace & semicolon
-                var end_brace_index = string.lastIndexOf("}", i);
-                // semicolon_index = string.lastIndexOf(";", i);
-
-                // place both indices into an array
-                // filter(Number): http://stackoverflow.com/questions/281264/remove-empty-elements-from-an-array-in-javascript/2843625#2843625
-                // var prev_indices = [(!-~end_brace_index ? null : end_brace_index), (!-~semicolon_index ? null : semicolon_index)].filter(Number);
-
-                // get the lowest indice in number. this index will be the
-                // closest to the first open brace. if there is no brace at all,
-                // null is returned in place of -1.
-                // var prev_index = (prev_indices.length) ? Math.max.apply(null, prev_indices) : null;
-                var prev_index = end_brace_index;
-
-                // finally, get selector from CSS string
-                var selector = string.substring(((prev_index) ? (prev_index + 1) : 0), i);
-
-                // increment index by 1 as we do not want to get the opening brace
-                // only want what is between the braces
-                var between_text_index = i + 1;
-
-                // get the CSS code block by using the current index + 1 as the start
-                // and the closing brace index as the end point
-                var text_between = string.substring(between_text_index, string.indexOf("}", (i + 1)));
-
-                // add to array
-                flags.parts.push([text_between, "block"]);
-                // placehold block
-                string = placehold(between_text_index, string, text_between);
-                // reset length and index
-                i = new_index(between_text_index);
-                l = string.length;
-
-            }
-
-        }
 
         // parse string only highlighting the selectors
         string = parser(string, "selector");

@@ -55,284 +55,520 @@
         "start": null,
         // selector/codeblock loop flags
         "nested": null,
-        "nestedlevel": -1
+        "nestedlevel": -1,
+        // error/warning flags
+        "warning": null
     };
 
-    /**
-     * @description [After strings/comments/code blocks are placeholded this parser
-     *               is run. Parser runs on 3 modes (selector|property|x-property-value).
-     *               Either parsing selectors, CSS properties, or CSS value declarations.]
-     * @param  {String} string [The string to parse.]
-     * @param  {String} mode   [The parsing mode.]
-     * @return {String}        [Syntax highlighted string.]
-     */
-    function parser(string, mode) {
+    function is_escaped(prev_char) {
+        return (prev_char === "\\") ? true : false;
+    }
 
-        // loop over string
-        for (var i = 0, l = string.length; i < l; i++) {
+    function ending(i, closing, string) {
 
-            if (i === -1) break; // used to stop infinite loop while debugging
+        var on = true;
 
-            // cache the current character
-            var char = string.charAt(i),
-                prev_char = string.charAt(i - 1),
-                next_char = string.charAt(i + 1);
-
-            // skip current iteration on these characters
-            if (-~["`", " ", "\"", "'"].indexOf(char)) {
-                // fast forward index on ticks, as they are the placeholders
-                // therefore...set loop index to character after the ending tick
-                if (char === "`") i = string.indexOf("`", i + 1);
-                // skip to next loop iteration
-                continue;
-
-            } else if (char === "@" && -~["selector"].indexOf(mode)) { // atrules
-
-                // get the forward index
-                var findex = forward(i, string, /[^a-z\-]/i);
-                // get the fast forwarded string
-                var atrule = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                var prefix = "";
-                // check for possible browser prefix
-                if (atrule.charAt(1) === "-") {
-                    // get the second hyphen index
-                    var hyphen_index = atrule.indexOf("-", 2);
-                    // get/set the prefix
-                    prefix = atrule.substring(2, hyphen_index);
-                    // reset the atrule
-                    atrule = "@" + atrule.substring(hyphen_index + 1, atrule.length);
-                    // check if atrule is valid...if not reset back to empty
-                    if (!-~db.prefixes.indexOf(prefix.toLowerCase())) {
-                        prefix = "";
-                        atrule = ""; // purposely invalidate atrule
-                    }
+        while (on) {
+            // console.log("??????????", i);
+            // find new instance of closing string
+            i = string.indexOf(closing, i + 1);
+            if (!-~i) {
+                // stop loop
+                on = false;
+            } else {
+                // check that previous character is not escaping
+                var rindex = reverse(i, string, /[^\\]/);
+                // console.log(">>>>>>>>>>>>>>reverse", rindex, i, string, (i - rindex));
+                if (!((i - rindex) & 1)) {
+                    // if the difference is a positive number the asterisk
+                    // is not being escaped and can be used ad the comment
+                    // end. otherwise, if the difference is odd then the
+                    // asterisk is being escaped and the search should continue
+                    // console.log("is even");
+                    on = false;
                 }
+            }
+        }
+        // console.log("))))))))))))))))))))", i);
+        return i;
 
-                // check if string is in allowed atrules
-                if (-~db.atrules.indexOf(atrule.slice(1).toLowerCase())) {
+    }
 
-                    // if a prefix is present...reset atrule back to normal
-                    if (prefix) atrule = ("@-" + prefix + "-" + atrule.slice(1));
+    function parse_warning(msg, index, flags) {
 
-                    // add to array
-                    flags.parts.push([atrule, "atrule"]);
-                    // placehold atrule
-                    string = placehold(i, string, atrule);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
+        // set the warning
+        flags.warning = msg + " " + index + ".";
 
+        return index;
+
+    }
+
+    var parse_string = function(i, string, char, prev_char, next_char, flags, mode) {
+
+        // grab everything until the string ends, take into account escaped quotes
+        var close_index = ending(i, char, string)
+
+        // set warning is unclosed
+        if (!-~close_index) return parse_warning("Possible unclosed string skipped at index", i, flags);
+
+        // else closing quote found, in other words valid string
+        // get everything between the string plus the string start & end quotes
+        var str = string.substring(i, (close_index + flags.INCLUDE_LAST));
+        // add the string to array
+        flags.parts.push([str, "string", i, str.length]);
+        // reset the index
+        i = close_index + 1;
+
+        // return the index
+        return i;
+
+    };
+
+    var parse_letter = function(i, string, char, prev_char, next_char, flags, mode) {
+
+        if (!-~["selector", "property", "x-property-value"].indexOf(mode)) return i;
+
+        // get the forward index
+        var findex = forward(i, string, /[^a-z0-9\-]/i);
+        // get the fast forwarded string
+        var str = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+        // the word must be a type, determined below, to by highlighted
+        var type = null;
+
+        // skip if word is an attribute or a function
+        // attributes are left default color (black) and functions
+        // are handled in their own if check
+        if ((string.charAt(findex + flags.INCLUDE_LAST) === "(" && -~db.functions.indexOf(str.toLowerCase()))) {
+            // reset the index so that the next iteration it starts at the parenthesis
+            // character so that it triggers the if function logic check
+            // console.log("this is a potential function mane", str);
+            i = findex;
+            return i;
+        }
+
+        // check if string is in allowed tags
+        // check that if the previous character is not a letter
+        // for example, in the word "this" the letter s will be
+        // considered a tag element. this will prevent this case.
+        // likewise, for the property "-webkit-box" the x will be
+        // detected but because it is part of a word we must skip it
+        if (-~db.tags.indexOf(str) && /[^a-z\-\[]/i.test(prev_char) && mode === "selector") {
+            // if (-~db.tags.indexOf(str) && -~["", "}"].indexOf(prev_char.trim()) && mode === "selector") {
+            type = "tag";
+            // check for colornames, fonts, media-types|features|logicals,
+            // properties...all of which do not have any numbers
+        } else if (/[^0-9]/.test(str)) { // only string that have letters
+            if (mode === "property") { // CSS properties
+                if (-~db.properties.indexOf(str)) {
+                    type = "property";
                 }
-
-                // check if atrule is a oneliner..if so skip
-                // simply skip this atrule as it is a oneliner function
-                // and does not contain an inner code block
-                if (!-~["charset", "import", "namespace"].indexOf(atrule)) {
-                    // set the nested flag
-                    flags.nested = true;
+            } else if (mode === "selector") { // anything part of a CSS selector
+                if (-~db.media.types.indexOf(str)) {
+                    type = "media-type";
+                } else if (-~db.media.features.indexOf(str)) {
+                    type = "media-feature";
+                } else if (-~db.media.logicals.indexOf(str)) {
+                    type = "media-logical";
+                } else if (-~db.keywords.selector.indexOf(str)) {
+                    type = "selector-alternating";
                 }
-
-            } else if (char === "{") {
-
-                // if the nested flag is set
-                if (flags.nested) {
-                    // increment nested level count
-                    flags.nestedlevel = flags.nestedlevel + 1;
-                    // turn off nested flag, no longer needed
-                    flags.nested = null;
-                } else {
-                    // this is a normal code block, not a nested atrule
-                    // get the ending brace and code block
-                    var ending_brace = string.indexOf("}", i + 1);
-                    // only get text bwteeen the braces, the code block, but
-                    // do not get the braces
-                    var text_between = string.substring(i + 1, ending_brace);
-                    // placehold codeblock here
-                    // add to array
-                    flags.parts.push([text_between, "block"]);
-                    // placehold block
-                    string = placehold((i + 1), string, text_between);
-                    // reset length and index
-                    i = new_index((i + 1));
-                    l = string.length;
-
+            } else if (mode === "x-property-value") { // anything part of a CSS declaration value
+                if (-~db.fontnames.indexOf(str)) {
+                    type = "fontname";
+                } else if (-~db.colornames.indexOf(str)) {
+                    type = "colorname";
+                } else { // anything else gets the default color
+                    type = "x-property-value";
                 }
+            }
+        }
 
-            } else if (char === "}") {
+        if (type) {
 
-                // if the nested count is present...reduce it by 1
-                if (flags.nestedlevel > -1) {
-                    // decrease nested level by 1
-                    flags.nestedlevel = flags.nestedlevel - 1;
+            // add to array
+            flags.parts.push([str, type]);
+            // reset the index
+            i = findex;
+
+        }
+
+        // return the index
+        return i;
+
+    };
+    var parse_number = function(i, string, char, prev_char, next_char, flags, mode) {
+
+        if (!-~["selector", "x-property-value"].indexOf(mode)) return i;
+
+        // get the forward index
+        var findex = forward(i, string, /[^0-9\.]/i);
+        // get the fast forwarded string
+        var str = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+        // potential number
+        if (str) {
+
+            var dot_count = str.split(".").length - 1;
+            // skip if more than 2 consecutive minus signs in a row
+            if (dot_count > 1) return i;
+            // skip if no numbers are contained
+            if (!/[0-9]/.test(str)) return i;
+
+            // add to array
+            flags.parts.push([str, "number"]);
+            // reset the index
+            i = findex;
+
+            // // increase the index to the next iteration character
+            // // to check for possible unit
+            // i++;
+
+            // get the forward index
+            var findex = forward((i), string, /[^a-z]/i);
+            // get the fast forwarded string
+            var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
+
+            if (-~db.units.indexOf(unit)) {
+
+                // check if "unit" is the nth selector
+                var css_class = (unit !== "n" ? "unit" : "nth");
+
+                // add to array
+                flags.parts.push([unit, css_class]);
+                // reset the index
+                i = findex;
+
+            }
+
+            // else {
+            //     // if no unit found move index back prior to check
+            //     i--;
+            // }
+
+        }
+
+        // return the index
+        return i;
+
+    };
+    var parse_operator = function(i, string, char, prev_char, next_char, flags, mode) {
+
+        if (!-~["selector", "x-property-value"].indexOf(mode)) return i;
+
+        // check if the next character is an equal sign
+        var operator = string.substring(i, (i + ((next_char === "=") ? 2 : 1)));
+
+        // check if double operator is valid...
+        // if not reset it back to a single operator
+        if (operator.length === 2) {
+            // check if operator is allowed
+            if (!-~db.operators.indexOf(operator)) {
+                // if not reset it back to the single operator
+                operator = string.substring(i, (i + 1));
+            }
+        }
+
+        // only add to list if operator is in list
+        if (-~db.operators.indexOf(operator)) {
+
+            // add the string to array
+            flags.parts.push([operator, "operator"]);
+            // reset length and index
+            i = i + (operator.length - 1);
+
+        }
+
+        // return the index
+        return i;
+
+    };
+
+    var parsers = {
+        // "`": function() {},
+        "\"": parse_string,
+        "'": parse_string,
+        "/": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // skips are made to the next iteration character
+            // skip if quote is being escaped
+            // if (is_escaped(prev_char)) return i;
+            // next character must be an asterisk
+            if (next_char !== "*") return i;
+
+            // grab everything until the comment ends
+            var close_index = string.indexOf("*/", i + 1);
+
+            // set warning is unclosed
+            if (!-~close_index) return parse_warning("Possible unclosed comment skipped at index", i, flags);
+
+            // else close comment ending found, in other words valid comment
+            // get everything between the comment plus the comment start (/*) & end (*/)
+            // this is why 2 is added to the close_index, to grab the end (*/)
+            var str = string.substring(i, (close_index + (flags.INCLUDE_LAST * 2)));
+            // add the string to array
+            flags.parts.push([str, "comment", i, str.length]);
+            // reset the index
+            i = close_index + 1;
+
+            // return the index
+            return i;
+
+        },
+        "@": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // must be the allowed mode to run
+            if (!-~["selector"].indexOf(mode)) return i;
+
+            // get the forward index
+            var findex = forward(i, string, /[^a-z\-]/i);
+            // get the fast forwarded string
+            var atrule = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+            var prefix = "";
+            // check for possible browser prefix
+            if (atrule.charAt(1) === "-") {
+                // get the second hyphen index
+                var hyphen_index = atrule.indexOf("-", 2);
+                // get/set the prefix
+                prefix = atrule.substring(2, hyphen_index);
+                // reset the atrule
+                atrule = "@" + atrule.substring(hyphen_index + 1, atrule.length);
+                // check if atrule is valid...if not reset back to empty
+                if (!-~db.prefixes.indexOf(prefix.toLowerCase())) {
+                    prefix = "";
+                    atrule = ""; // purposely invalidate atrule
                 }
+            }
 
-            } else if (char === "(" && -~["selector", "x-property-value"].indexOf(mode)) { // functions
+            // check if string is in allowed atrules
+            if (-~db.atrules.indexOf(atrule.slice(1).toLowerCase())) {
 
-                // get the reverse index
-                var rindex = reverse(i, string, /[^a-z-]/i);
-                // get the fast forwarded string
-                var fn = string.substring(rindex, i);
+                // if a prefix is present...reset atrule back to normal
+                if (prefix) atrule = ("@-" + prefix + "-" + atrule.slice(1));
 
-                var prefix = "";
-                // check for possible browser prefix
-                if (fn.charAt(0) === "-") {
+                // add to array
+                flags.parts.push([atrule, "atrule", i, atrule.length]);
+                // reset the index
+                i = findex;
 
-                    // get the second hyphen index
-                    var hyphen_index = fn.indexOf("-", 1);
-                    // get/set the prefix
-                    prefix = fn.substring(1, hyphen_index);
-                    // reset the fn
-                    fn = fn.substring(hyphen_index + 1, fn.length);
-                    // check if fn is valid...if not reset back to empty
-                    if (!-~db.prefixes.indexOf(prefix.toLowerCase())) {
-                        prefix = "";
-                        fn = ""; // purposely invalidate fn
-                    }
+            }
+
+            // check if atrule is a oneliner..if so skip as it does not contain
+            //  an inner code block
+            if (!-~["charset", "import", "namespace"].indexOf(atrule)) {
+                // set the nested flag
+                flags.nested = true;
+            }
+
+            // return the index
+            return i;
+
+        },
+        "{": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // if the nested flag is set
+            if (flags.nested) {
+
+                // increment nested level count
+                flags.nestedlevel = flags.nestedlevel + 1;
+                // turn off nested flag, no longer needed
+                flags.nested = null;
+
+            } else {
+
+                // this is a normal code block, not a nested atrule
+                // get the ending brace and code block
+                var ending_brace = string.indexOf("}", i + 1);
+                // only get text bwteeen the braces, the code block, but
+                // do not get the braces
+                var text_between = string.substring(i + 1, ending_brace);
+                // placehold codeblock here
+                // add to array
+                flags.parts.push(["{", null, i]);
+                flags.parts.push([text_between, "block"]);
+                flags.parts.push(["}", null, ending_brace]);
+                // reset length and index
+                i = ending_brace;
+
+            }
+
+            // return the index
+            return i;
+
+        },
+        "}": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // if the nested count is present...reduce it by 1
+            if (flags.nestedlevel > -1) {
+                // decrease nested level by 1
+                flags.nestedlevel = flags.nestedlevel - 1;
+            }
+
+            // return the index
+            return i;
+
+        },
+        "(": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // must be the allowed mode to run
+            if (!-~["selector", "x-property-value"].indexOf(mode)) return i;
+
+            // get the reverse index
+            var rindex = reverse(i, string, /[^a-z-]/i);
+            // get the fast forwarded string
+            var fn = string.substring(rindex, i);
+
+            var prefix = "";
+            // check for possible browser prefix
+            if (fn.charAt(0) === "-") {
+
+                // get the second hyphen index
+                var hyphen_index = fn.indexOf("-", 1);
+                // get/set the prefix
+                prefix = fn.substring(1, hyphen_index);
+                // reset the fn
+                fn = fn.substring(hyphen_index + 1, fn.length);
+                // check if fn is valid...if not reset back to empty
+                if (!-~db.prefixes.indexOf(prefix.toLowerCase())) {
+                    prefix = "";
+                    fn = ""; // purposely invalidate fn
                 }
+            }
 
-                // check if string is in allowed functions
-                if (-~db.functions.indexOf(fn.replace(/\($/, "").toLowerCase())) {
+            // check if string is in allowed functions
+            if (-~db.functions.indexOf(fn.replace(/\($/, "").toLowerCase())) {
 
-                    // if a prefix is present...reset fn back to normal
-                    if (prefix) fn = ("-" + prefix + "-" + fn);
+                // if a prefix is present...reset fn back to normal
+                if (prefix) fn = ("-" + prefix + "-" + fn);
 
-                    // add to array
-                    flags.parts.push([fn, "function"]);
-                    // placehold function
-                    string = placehold(rindex, string, fn);
-                    // reset the index
-                    // add 1 to rindex to pick up after the open parenthesis
-                    // not adding 1 will cause an infinite loop as it starts
-                    // on the open parenthesis...triggering the function if
-                    // check again and again...
-                    i = new_index(rindex + 1);
-                    l = string.length;
+                // add to array
+                flags.parts.push([fn, "function"]);
+                flags.parts.push(["(", null]);
+                // reset the index
+                // i = i;
 
+            }
+
+            // return the index
+            return i;
+
+        },
+        "[": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // must be the allowed mode to run
+            if (!-~["selector"].indexOf(mode)) return i;
+
+            // get the forward index
+            var findex = forward(i, string, /[^a-z\-]/i);
+            // get the fast forwarded string
+            var attribute = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+            // check if string is in allowed attributes
+            if (attribute.length > 1) {
+
+                i++; // increase index to not include the starting bracket
+                // remove starting bracket
+                attribute = attribute.replace(/^\[/g, "");
+
+                // add to array
+                flags.parts.push(["[", null]);
+                flags.parts.push([attribute, "attribute"]);
+                // reset the index
+                i = findex;
+
+            }
+
+            // return the index
+            return i;
+
+        },
+        ":": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            // must be the allowed mode to run
+            if (!-~["selector", "x-property-value"].indexOf(mode)) return i;
+
+            // if the next char after the current colon is anything
+            // but a letter it must be skipped. this is done to cover
+            // the use of double colons like ::after. the pseudo "after"
+            // will get picked up on the next iteration.
+            if (/[^a-z\-]/i.test(next_char)) {
+                // add to the array and return the index
+                flags.parts.push([":", null]);
+                return i
+            }
+
+            // get the forward index
+            var findex = forward(i, string, /[^a-z\-]/i);
+            // get the fast forwarded string
+            var pseudo = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+            var prefix = "";
+            // check for possible browser prefix
+            if (pseudo.charAt(1) === "-") {
+                // get the second hyphen index
+                var hyphen_index = pseudo.indexOf("-", 2);
+                // get/set the prefix
+                prefix = pseudo.substring(2, hyphen_index);
+                // reset the pseudo
+                pseudo = ":" + pseudo.substring(hyphen_index + 1, pseudo.length);
+                // check if pseudo is valid...if not reset back to empty
+                if (!-~db.prefixes.indexOf(prefix.toLowerCase())) {
+                    prefix = "";
+                    pseudo = ""; // purposely invalidate pseudo
                 }
+            }
 
-            } else if (char === "[" && -~["selector"].indexOf(mode)) { // attributes
+            // check if string is in allowed pseudos
+            if (-~db.pseudos.indexOf(pseudo.toLowerCase())) {
 
-                // get the forward index
-                var findex = forward(i, string, /[^a-z\-]/i);
-                // get the fast forwarded string
-                var attribute = string.substring(i, (findex + flags.INCLUDE_LAST));
+                // if a prefix is present...reset pseudo back to normal
+                if (prefix) pseudo = (":-" + prefix + "-" + pseudo.slice(1));
 
-                // check if string is in allowed attributes
-                if (attribute.length > 1) {
+                i++; // increase index to not include the starting colon
+                // remove starting colon
+                pseudo = pseudo.replace(/^:/g, "");
 
-                    i++; // increase index to not include the starting bracket
-                    // remove starting bracket
-                    attribute = attribute.replace(/^\[/g, "");
+                // add to array
+                flags.parts.push([":", null]);
+                flags.parts.push([pseudo, "pseudo"]);
+                // reset the index
+                i = findex;
 
-                    // add to array
-                    flags.parts.push([attribute, "attribute"]);
-                    // placehold attribute
-                    string = placehold(i, string, attribute);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
+            }
 
-                }
+            // return the index
+            return i;
 
-            } else if (char === ":" && -~["selector", "x-property-value"].indexOf(mode)) { // pseudos
+        },
+        "!": function(i, string, char, prev_char, next_char, flags, mode) {
 
-                // if the next char after the current colon is anything
-                // but a letter it must be skipped. this is done to cover
-                // the use of double colons like ::after. the pseudo "after"
-                // will get picked up on the next iteration.
-                if (/[^a-z\-]/i.test(next_char)) continue;
+            // must be the allowed mode to run
+            if (!-~["x-property-value"].indexOf(mode)) return i;
 
-                // get the forward index
-                var findex = forward(i, string, /[^a-z\-]/i);
-                // get the fast forwarded string
-                var pseudo = string.substring(i, (findex + flags.INCLUDE_LAST));
+            // get the forward index
+            var findex = forward(i, string, /[^a-z]/i);
+            // get the fast forwarded string
+            var keyword = string.substring(i, (findex + flags.INCLUDE_LAST));
 
-                var prefix = "";
-                // check for possible browser prefix
-                if (pseudo.charAt(1) === "-") {
-                    // get the second hyphen index
-                    var hyphen_index = pseudo.indexOf("-", 2);
-                    // get/set the prefix
-                    prefix = pseudo.substring(2, hyphen_index);
-                    // reset the pseudo
-                    pseudo = ":" + pseudo.substring(hyphen_index + 1, pseudo.length);
-                    // check if pseudo is valid...if not reset back to empty
-                    if (!-~db.prefixes.indexOf(prefix.toLowerCase())) {
-                        prefix = "";
-                        pseudo = ""; // purposely invalidate pseudo
-                    }
-                }
+            // check if string is in allowed keywords
+            if (-~db.keywords.value.indexOf(keyword.toLowerCase())) {
 
-                // check if string is in allowed pseudos
-                if (-~db.pseudos.indexOf(pseudo.toLowerCase())) {
+                // add to array
+                flags.parts.push([keyword, "keyword"]);
+                // reset the index
+                i = findex;
 
-                    // if a prefix is present...reset pseudo back to normal
-                    if (prefix) pseudo = (":-" + prefix + "-" + pseudo.slice(1));
+            }
 
-                    i++; // increase index to not include the starting colon
-                    // remove starting colon
-                    pseudo = pseudo.replace(/^:/g, "");
+            // return the index
+            return i;
 
-                    // add to array
-                    flags.parts.push([pseudo, "pseudo"]);
-                    // placehold pseudo
-                    string = placehold(i, string, pseudo);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
+        },
+        "-": function(i, string, char, prev_char, next_char, flags, mode) {
 
-                }
-
-            } else if (char === "!" && -~["x-property-value"].indexOf(mode)) { // keywords
-
-                // get the forward index
-                var findex = forward(i, string, /[^a-z]/i);
-                // get the fast forwarded string
-                var keyword = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                // check if string is in allowed keywords
-                if (-~db.keywords.value.indexOf(keyword.toLowerCase())) {
-
-                    // add to array
-                    flags.parts.push([keyword, "keyword"]);
-                    // placehold keyword
-                    string = placehold(i, string, keyword);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
-
-                }
-
-            } else if (-~db.operators.indexOf(char) && -~["selector", "x-property-value"].indexOf(mode)) { // operators
-
-                // check if the next character is an equal sign
-                var operator = string.substring(i, (i + ((next_char === "=") ? 2 : 1)));
-
-                // check if double operator is valid...
-                // if not reset it back to a single operator
-                if (operator.length === 2) {
-                    // check if operator is allowed
-                    if (!-~db.operators.indexOf(operator)) {
-                        // if not reset it back to the single operator
-                        operator = string.substring(i, (i + 1));
-                    }
-                }
-
-                // only add to list if operator is in list
-                if (-~db.operators.indexOf(operator)) {
-
-                    // add the string to array
-                    flags.parts.push([operator, "operator"]);
-                    // placehold operator
-                    string = placehold(i, string, operator);
-                    // reset length and index
-                    i = new_index(i);
-                    l = string.length;
-
-                }
-
-            } else if (char === "-" && -~["selector", "x-property-value"].indexOf(mode)) { // potential number/prefixed property
+            // must be the allowed mode to run
+            if (-~["selector", "x-property-value"].indexOf(mode)) {
 
                 // get the forward index
                 var findex = forward(i, string, /[^0-9\.\-]/i);
@@ -344,7 +580,7 @@
 
                     var minus_count = str.split("-").length - 1;
                     // skip if more than 2 consecutive minus signs in a row
-                    if (minus_count > 2) continue;
+                    if (minus_count > 2) return i;
                     var dot_count = str.split(".").length - 1;
                     // skip if more than 2 consecutive minus signs in a row
                     if (dot_count > 1) {
@@ -354,15 +590,12 @@
                         str = parts[0] + "." + parts[1];
                     }
                     // skip if no numbers are contained
-                    if (!/[0-9]/.test(str)) continue;
+                    if (!/[0-9]/.test(str)) return i;
 
                     // add to array
                     flags.parts.push([str, "number"]);
-                    // placehold number
-                    string = placehold(i, string, str);
                     // reset the index
-                    i = new_index(i);
-                    l = string.length;
+                    i = findex;
 
                     // increase the index to the next iteration character
                     // to check for possible unit
@@ -380,11 +613,8 @@
 
                         // add to array
                         flags.parts.push([unit, css_class]);
-                        // placehold unit
-                        string = placehold(i, string, unit);
                         // reset the index
-                        i = new_index(i);
-                        l = string.length;
+                        i = findex;
 
                     } else {
                         // if no unit found move index back prior to check
@@ -422,7 +652,7 @@
                         // reset the index so that the next iteration it starts at the parenthesis
                         // character so that it triggers the if function logic check
                         i = findex;
-                        continue;
+                        return i;
                     }
 
                     // check if string is in allowed strs
@@ -433,17 +663,17 @@
 
                         // add to array
                         flags.parts.push([str, "x-property-value"]);
-                        // placehold str
-                        string = placehold(i, string, str);
                         // reset the index
-                        i = new_index(i);
-                        l = string.length;
+                        i = findex;
 
                     }
 
                 }
 
-            } else if (char === "-" && -~["property"].indexOf(mode)) { // prefixed property/word
+                // return the index
+                return i;
+
+            } else if (-~["property"].indexOf(mode)) {
 
                 // get the forward index
                 var findex = forward(i, string, /[^a-z\-]/i);
@@ -474,268 +704,257 @@
 
                     // add to array
                     flags.parts.push([str, "property"]);
-                    // placehold str
-                    string = placehold(i, string, str);
                     // reset the index
-                    i = new_index(i);
-                    l = string.length;
-
-                }
-
-            } else if (char === "." && -~["selector", "x-property-value"].indexOf(mode)) { // potential number/class
-
-                // get the forward index
-                var findex = forward(i, string, /[^0-9]/i);
-                // get the fast forwarded string
-                var str = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                // potential number
-                // has to be more than the dot
-                if (str.length > 1) {
-
-                    // add to array
-                    flags.parts.push([str, "number"]);
-                    // placehold number
-                    string = placehold(i, string, str);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
-
-                    // increase the index to the next iteration character
-                    // to check for possible unit
-                    i++;
-
-                    // get the forward index
-                    var findex = forward((i), string, /[^a-z]/i);
-                    // get the fast forwarded string
-                    var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
-
-                    if (-~db.units.indexOf(unit)) {
-
-                        // check if "unit" is the nth selector
-                        var css_class = (unit !== "n" ? "unit" : "nth");
-
-                        // add to array
-                        flags.parts.push([unit, css_class]);
-                        // placehold unit
-                        string = placehold(i, string, unit);
-                        // reset the index
-                        i = new_index(i);
-                        l = string.length;
-
-                    } else {
-                        // if no unit found move index back prior to check
-                        i--;
-                    }
-
-                } else { // potential class
-
-                    // get the forward index
-                    var findex = forward(i, string, /[^a-z0-9\-_]/i);
-                    // get the fast forwarded string
-                    var selector = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                    // http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers/2812097#2812097
-                    // selector cannot start with a number or hyphen then number
-                    if (/[0-9]/.test(selector.charAt(1))) continue;
-                    // selector cannot start with hyphen then number
-                    if (selector.charAt(1) === "_" && /[0-9]/.test(selector.charAt(2))) continue;
-
-                    // if the first character after the dot or hash is number skip
-                    // the current iteration and set is_decimal flag. this will cause
-                    // the next iteration to pick up with the number and run the number
-                    // if check logic block.
-                    if (char === "." && /[0-9]/.test(selector.charAt(1))) continue;
-
-                    // check if string is in allowed ids
-                    if (selector.length > 1) {
-
-                        // add to array
-                        flags.parts.push([selector, "class"]);
-                        // placehold selector
-                        string = placehold(i, string, selector);
-                        // reset the index
-                        i = new_index(i);
-                        l = string.length;
-
-                    }
-
-                }
-
-            } else if (/[0-9]/.test(char) && -~["selector", "x-property-value"].indexOf(mode)) { // potential number([negative] doubles, integers, floats, units)
-
-                // get the forward index
-                var findex = forward(i, string, /[^0-9\.]/i);
-                // get the fast forwarded string
-                var str = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                // potential number
-                if (str) {
-
-                    var dot_count = str.split(".").length - 1;
-                    // skip if more than 2 consecutive minus signs in a row
-                    if (dot_count > 1) continue;
-                    // skip if no numbers are contained
-                    if (!/[0-9]/.test(str)) continue;
-
-                    // add to array
-                    flags.parts.push([str, "number"]);
-                    // placehold number
-                    string = placehold(i, string, str);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
-
-                    // increase the index to the next iteration character
-                    // to check for possible unit
-                    i++;
-
-                    // get the forward index
-                    var findex = forward((i), string, /[^a-z]/i);
-                    // get the fast forwarded string
-                    var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
-
-                    if (-~db.units.indexOf(unit)) {
-
-                        // check if "unit" is the nth selector
-                        var css_class = (unit !== "n" ? "unit" : "nth");
-
-                        // add to array
-                        flags.parts.push([unit, css_class]);
-                        // placehold unit
-                        string = placehold(i, string, unit);
-                        // reset the index
-                        i = new_index(i);
-                        l = string.length;
-
-                    } else {
-                        // if no unit found move index back prior to check
-                        i--;
-                    }
-
-                }
-
-            } else if (char === "#" && -~["selector", "x-property-value"].indexOf(mode)) { // ids/hexcolors
-
-                // get the forward index
-                var findex = forward(i, string, /[^a-z0-9\-_]/i);
-                // get the fast forwarded string
-                var str = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                // // if the first character after the dot or hash is number skip
-                // // the current iteration and set is_decimal flag. this will cause
-                // // the next iteration to pick up with the number and run the number
-                // // if check logic block.
-                // if (char === "." && /[0-9]/.test(str.charAt(1))) continue;
-
-                // check if string is in allowed ids
-                if (str.length > 1) {
-
-                    // hexcolor must be either 3, 6, 8 hexadecimal characters in length
-                    if (mode === "x-property-value" && !/[^a-f0-9]/i.test(str.slice(1)) && -~[3, 6, 8].indexOf(str.length - 1)) {
-
-                        // add to array
-                        flags.parts.push([str, "hexcolor"]);
-                        // placehold str
-                        string = placehold(i, string, str);
-                        // reset the index
-                        i = new_index(i);
-                        l = string.length;
-
-                    } else { // else the string is a hex
-
-                        // http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers/2812097#2812097
-                        // str cannot start with a number or hyphen then number
-                        if (/[0-9]/.test(str.charAt(1))) continue;
-                        // str cannot start with hyphen then number
-                        if (str.charAt(1) === "_" && /[0-9]/.test(str.charAt(2))) continue;
-
-                        // add to array
-                        flags.parts.push([str, "id"]);
-                        // placehold str
-                        string = placehold(i, string, str);
-                        // reset the index
-                        i = new_index(i);
-                        l = string.length;
-                    }
-
-                }
-
-            } else if (/[a-z]/i.test(char) && -~["selector", "property", "x-property-value"].indexOf(mode)) { // tags
-
-                // get the forward index
-                var findex = forward(i, string, /[^a-z0-9\-]/i);
-                // get the fast forwarded string
-                var str = string.substring(i, (findex + flags.INCLUDE_LAST));
-
-                // the word must be a type, determined below, to by highlighted
-                var type = null;
-
-                // skip if word is an attribute or a function
-                // attributes are left default color (black) and functions
-                // are handled in their own if check
-                if ((string.charAt(findex + flags.INCLUDE_LAST) === "(" && -~db.functions.indexOf(str.toLowerCase()))) {
-                    // reset the index so that the next iteration it starts at the parenthesis
-                    // character so that it triggers the if function logic check
                     i = findex;
-                    continue;
-                }
-
-                // check if string is in allowed tags
-                // check that if the previous character is not a letter
-                // for example, in the word "this" the letter s will be
-                // considered a tag element. this will prevent this case.
-                // likewise, for the property "-webkit-box" the x will be
-                // detected but because it is part of a word we must skip it
-                if (-~db.tags.indexOf(str) && /[^a-z\-\[]/i.test(prev_char) && mode === "selector") {
-                    // if (-~db.tags.indexOf(str) && -~["", "}"].indexOf(prev_char.trim()) && mode === "selector") {
-                    type = "tag";
-                    // check for colornames, fonts, media-types|features|logicals,
-                    // properties...all of which do not have any numbers
-                } else if (/[^0-9]/.test(str)) { // only string that have letters
-                    if (mode === "property") { // CSS properties
-                        if (-~db.properties.indexOf(str)) {
-                            type = "property";
-                        }
-                    } else if (mode === "selector") { // anything part of a CSS selector
-                        if (-~db.media.types.indexOf(str)) {
-                            type = "media-type";
-                        } else if (-~db.media.features.indexOf(str)) {
-                            type = "media-feature";
-                        } else if (-~db.media.logicals.indexOf(str)) {
-                            type = "media-logical";
-                        } else if (-~db.keywords.selector.indexOf(str)) {
-                            type = "selector-alternating";
-                        }
-                    } else if (mode === "x-property-value") { // anything part of a CSS declaration value
-                        if (-~db.fontnames.indexOf(str)) {
-                            type = "fontname";
-                        } else if (-~db.colornames.indexOf(str)) {
-                            type = "colorname";
-                        } else { // anything else gets the default color
-                            type = "x-property-value";
-                        }
-                    }
-                }
-
-                if (type) {
-
-                    // add to array
-                    flags.parts.push([str, type]);
-                    // placehold tag
-                    string = placehold(i, string, str);
-                    // reset the index
-                    i = new_index(i);
-                    l = string.length;
 
                 }
 
             }
 
+            // return the index
+            return i;
+
+        },
+        ".": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            if (!-~["selector", "x-property-value"].indexOf(mode)) return i;
+
+            // get the forward index
+            var findex = forward(i, string, /[^0-9]/i);
+            // get the fast forwarded string
+            var str = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+            // potential number
+            // has to be more than the dot
+            if (str.length > 1) {
+
+                // add to array
+                flags.parts.push([str, "number"]);
+                // reset the index
+                i = findex;
+
+                // // increase the index to the next iteration character
+                // // to check for possible unit
+                // i++;
+
+                // get the forward index
+                var findex = forward((i), string, /[^a-z]/i);
+                // get the fast forwarded string
+                var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
+
+                if (-~db.units.indexOf(unit)) {
+
+                    // check if "unit" is the nth selector
+                    var css_class = (unit !== "n" ? "unit" : "nth");
+
+                    // add to array
+                    flags.parts.push([unit, css_class]);
+                    // reset the index
+                    i = findex;
+
+                }
+
+                // else {
+                //     // if no unit found move index back prior to check
+                //     i--;
+                // }
+
+            } else { // potential class
+
+                // get the forward index
+                var findex = forward(i, string, /[^a-z0-9\-_]/i);
+                // get the fast forwarded string
+                var selector = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+                // http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers/2812097#2812097
+                // selector cannot start with a number or hyphen then number
+                if (/[0-9]/.test(selector.charAt(1))) {
+                    flags.parts.push([".", null]);
+                    return i;
+                }
+                // selector cannot start with hyphen then number
+                if (selector.charAt(1) === "_" && /[0-9]/.test(selector.charAt(2))) {
+                    flags.parts.push([".", null]);
+                    return i;
+                }
+
+                // if the first character after the dot or hash is number skip
+                // the current iteration and set is_decimal flag. this will cause
+                // the next iteration to pick up with the number and run the number
+                // if check logic block.
+                if (char === "." && /[0-9]/.test(selector.charAt(1))) return i;
+
+                // check if string is in allowed ids
+                if (selector.length > 1) {
+
+                    // add to array
+                    flags.parts.push([selector, "class"]);
+                    // reset the index
+                    i = findex;
+
+                }
+
+            }
+
+            // return the index
+            return i;
+
+        },
+        "#": function(i, string, char, prev_char, next_char, flags, mode) {
+
+            if (!-~["selector", "x-property-value"].indexOf(mode)) return i;
+
+            // get the forward index
+            var findex = forward(i, string, /[^a-z0-9\-_]/i);
+            // get the fast forwarded string
+            var str = string.substring(i, (findex + flags.INCLUDE_LAST));
+
+            // // if the first character after the dot or hash is number skip
+            // // the current iteration and set is_decimal flag. this will cause
+            // // the next iteration to pick up with the number and run the number
+            // // if check logic block.
+            // if (char === "." && /[0-9]/.test(str.charAt(1))) continue;
+
+            // check if string is in allowed ids
+            if (str.length > 1) {
+
+                // hexcolor must be either 3, 6, 8 hexadecimal characters in length
+                if (mode === "x-property-value" && !/[^a-f0-9]/i.test(str.slice(1)) && -~[3, 6, 8].indexOf(str.length - 1)) {
+
+                    // add to array
+                    flags.parts.push([str, "hexcolor"]);
+                    // reset the index
+                    i = findex;
+
+                } else { // else the string is a hex
+
+                    // http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers/2812097#2812097
+                    // str cannot start with a number or hyphen then number
+                    if (/[0-9]/.test(str.charAt(1))) {
+                        flags.parts.push(["#", null]);
+                        return i;
+                    }
+                    // str cannot start with hyphen then number
+                    if (str.charAt(1) === "_" && /[0-9]/.test(str.charAt(2))) {
+                        flags.parts.push(["#", null]);
+                        return i;
+                    }
+
+                    // add to array
+                    flags.parts.push([str, "id"]);
+                    // reset the index
+                    i = findex;
+
+                }
+
+            }
+
+            // return the index
+            return i;
+
+        },
+        // letters
+        "a": parse_letter,
+        "b": parse_letter,
+        "c": parse_letter,
+        "d": parse_letter,
+        "e": parse_letter,
+        "f": parse_letter,
+        "g": parse_letter,
+        "h": parse_letter,
+        "i": parse_letter,
+        "j": parse_letter,
+        "k": parse_letter,
+        "l": parse_letter,
+        "m": parse_letter,
+        "n": parse_letter,
+        "o": parse_letter,
+        "p": parse_letter,
+        "q": parse_letter,
+        "r": parse_letter,
+        "s": parse_letter,
+        "t": parse_letter,
+        "u": parse_letter,
+        "v": parse_letter,
+        "w": parse_letter,
+        "x": parse_letter,
+        "y": parse_letter,
+        "z": parse_letter,
+        // numbers
+        "0": parse_number,
+        "1": parse_number,
+        "2": parse_number,
+        "3": parse_number,
+        "4": parse_number,
+        "5": parse_number,
+        "6": parse_number,
+        "7": parse_number,
+        "8": parse_number,
+        "9": parse_number,
+        // operators
+        "~": parse_operator,
+        "*": parse_operator,
+        "=": parse_operator,
+        ">": parse_operator,
+        "+": parse_operator,
+        "|": parse_operator,
+        "^": parse_operator
+    };
+
+    /**
+     * @description [After strings/comments/code blocks are placeholded this parser
+     *               is run. Parser runs on 3 modes (selector|property|x-property-value).
+     *               Either parsing selectors, CSS properties, or CSS value declarations.]
+     * @param  {String} string [The string to parse.]
+     * @param  {String} mode   [The parsing mode.]
+     * @return {String}        [Syntax highlighted string.]
+     */
+    function parser(string, mode) {
+
+        // pad string to help with edge cases
+        string = " " + string + " ";
+
+        // loop over string
+        for (var i = 0, l = string.length; i < l; i++) {
+
+            if (flags.warning) {
+                console.warn(flags.warning);
+                // clear warning
+                flags.warning = null;
+                // break;
+            }
+
+            if (i === -1) break; // used to stop infinite loop while debugging
+
+            // cache the current character
+            var char = string.charAt(i),
+                prev_char = string.charAt(i - 1),
+                next_char = string.charAt(i + 1);
+
+            // console.log(i, char);
+
+            // get parser
+            var parser_fn = parsers[char];
+
+            // if the character is parsable run the returned function
+            if (parser_fn) {
+                i = parser_fn(i, string, char, prev_char, next_char, flags, mode);
+            } else {
+                // simply add the character to array
+                flags.parts.push([char, null, i]);
+            }
+            // anything else is not important and can be skipped
+
         }
 
+        // flags.parts.forEach(function(item) {
+        // if (item[1] !== null)
+        // console.log(item);
+        // });
+
         // return string without the added initial padding
-        return string.replace(/^\s{1}|\s{1}$/g, "");
+        // return string.replace(/^\s{1}|\s{1}$/g, "");
+        return flags.parts;
 
     }
 
@@ -835,195 +1054,31 @@
      */
     function highlighter(string) {
 
-        // universal: strings, comments
-        // selector: selectors(class, id, tags), numbers, units, atrules, functions?, pseudos
-        // property: properties
-        // value: hexcolors, numbers, units, functions, pseudos, colornames
+        // return "-->"+parser(string)+"<--";
+        var parts = parser(string, "selector");
 
-        // pad string to help with edge cases
-        string = " " + string + " ";
+        // remove initial padding from array (first and last item)
+        parts.shift(); // remove start padding (first item)
+        parts.pop(); // remove ending padding
 
-        // loop over string
-        for (var i = 0, l = string.length; i < l; i++) {
+        // build string with highlighting
+        var build = [];
+        var l = parts.length;
+        parts.forEach(function(item, i) {
 
-            // cache the current character
-            var char = string.charAt(i);
-            // get the previous char
-            var prev_char = string.charAt(i - 1),
-                next_char = string.charAt(i + 1);
+            // console.log(i, item);
 
-            // skip current iteration on these characters
-            if (-~["`", " ", "{", "}"].indexOf(char)) {
-
-                // fast forward index on ticks, as they are the placeholders
-                // therefore...set loop index to character after the ending tick
-                if (char === "`") i = string.indexOf("`", i + 1);
-                // skip to next loop iteration
-                continue;
-
-                // string detection
-            } else if (-~["\"", "'"].indexOf(char) && prev_char !== "\\") {
-
-                // if pair flag is set, the current char must match the pair character.
-                // the starting quote must be of the same type as the ending quote...
-                // if they do not match skip iteration as they are not a match
-                if (flags.pair && char !== flags.pair) continue;
-
-                if (flags.wrap !== "comment") {
-
-                    if (flags.start === null && flags.wrap === null) {
-
-                        // set flags
-                        flags.wrap = "string";
-                        flags.start = i;
-                        // must match the same type of quote
-                        flags.pair = char;
-
-                    } else if (flags.start !== null && flags.wrap === "string" && flags.pair === char) {
-
-                        // store original index to see code clearer
-                        var original_index = flags.start;
-
-                        // get the string since the open quote
-                        var str = string.substring(original_index, (i + flags.INCLUDE_LAST));
-                        // add the string to array
-                        flags.parts.push([str, "string"]);
-                        // placehold string
-                        string = placehold(original_index, string, str);
-                        // reset the index
-                        i = new_index(original_index);
-                        l = string.length;
-
-                        // unset flags
-                        flags.wrap = null;
-                        flags.start = null;
-                        // must match the same type of quote
-                        flags.pair = null;
-
-                    }
-                }
-
-                // comment detection
-            } else if (((prev_char === "/" && char === "*") || (char === flags.pair && next_char === "/"))) {
-
-                if (flags.wrap !== "string") {
-
-                    if (flags.start === null && flags.wrap === null) {
-
-                        // set flags
-                        flags.wrap = "comment";
-                        flags.start = i;
-                        // must match the same type of quote
-                        flags.pair = char;
-
-                    } else if (flags.start !== null && flags.wrap === "comment") {
-
-                        // store original index to see code clearer
-                        var original_index = flags.start;
-
-                        // get the comment since the open /*
-                        var str = string.substring((original_index - 1), (i + (flags.INCLUDE_LAST * 2)));
-                        // add the comment to array
-                        flags.parts.push([str, "comment"]);
-                        // placehold string
-                        string = placehold(original_index, string, str, true /* set is_comment flag */ );
-                        // reset the index
-                        // move back 1 extra position to compensate for the 2 characters --> /*
-                        i = new_index(original_index) - 1;
-                        l = string.length;
-
-                        // unset flags
-                        flags.wrap = null;
-                        flags.start = null;
-                        // must match the same type of quote
-                        flags.pair = null;
-
-                    }
-                }
-            }
-
-            // id the end is reached and the flags.start is on...there was an unmatched
-            // quote or comment. to prevent an infinite loop the index is reset to the next character
-            // after the unmatched quote/comment chars so the parsing can continue as normal
-            if ((i === (l - 1)) && flags.start) {
-
-                // reset the index to skip unmatched ending character.
-                // the index will increase naturally when the new
-                // iteration begins. this will continue the loop where
-                // the unmatched quote was plus 1 position ahead, or the
-                // next characters after the unmatched quote :)
-                i = flags.start;
-                // unset flags
-                flags.wrap = null;
-                flags.start = null;
-                // must match the same type of quote
-                flags.pair = null;
-
-            }
-
-        }
-
-        ///////////////////////////
-        ///////////////////////////
-
-        // parse string only highlighting the selectors
-        string = parser(string, "selector");
-
-        // remove placeholders with HTML
-        return string.replace(/`\d+`/g, function() {
-            // get the info array for each replacement. the item contains the
-            // replaced text and its corresponding index to the flags.parts array
-            var info = flags.parts[(arguments[0].replace(/`/g, "") * 1)];
-            var string;
-
-            // separate code block into individual declaration prop: value;
-            // once their own item parse each and join after
-            if (info[1] === "block") {
-
-                // get the code block
-                var block = info[0];
-                // count the number of semicolons
-                var semicolon_count = block.split(";").length - 1;
-                // split into declarations
-                var declarations = block.split(";");
-                // code block parts will be held in an array
-                var build = [];
-
-                // loop over declarations
-                for (var i = 0, l = declarations.length; i < l; i++) {
-
-                    // cache each declaration
-                    var declaration = declarations[i];
-                    // split into property and value
-                    var colon_index = declaration.indexOf(":");
-                    var prop = declaration.substring(0, colon_index + 1);
-                    var value = declaration.substring(colon_index + 1, declaration.length);
-                    // add terminator to all except the last one
-                    if (i !== (l - 1)) value += ";";
-                    // parse the property and value, join, then push it to build array
-                    build.push(parser((" " + prop + " "), "property") + parser((" " + value + " "), "x-property-value"));
-
-                }
-
-                // remove place holders with HTML
-                string = build.join("").replace(/`\d+`/g, function() {
-                    // get the info array for each replacement. the item contains the
-                    // replaced text and its corresponding index to the flags.parts array
-                    var block_info = flags.parts[(arguments[0].replace(/`/g, "") * 1)];
-                    // add the syntax highlighting class and the corresponding replacement text
-                    return "<span class=\"lang-css-" + block_info[1] + "\">" + block_info[0] + "</span>";
-                });
-
-            } else {
-
-                // add the syntax highlighting calss and the corresponding replacement text
-                string = "<span class=\"lang-css-" + info[1] + "\">" + info[0] + "</span>";
-            }
-
-            // return highlighted string
-            return string;
+            var str = item[0];
+            var css_class = item[1] || "none";
+            // console.log(i, item);
+            var highlighted = "<span class=\"lang-css-" + css_class + "\">" + str + "</span>";
+            // skip the first and last items in array
+            // build.push((i === 0 || (i === (l - 1))) ? "" : highlighted);
+            build.push(highlighted);
 
         });
+
+        return build.join("");
 
     }
 

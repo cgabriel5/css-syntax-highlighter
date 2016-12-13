@@ -13,12 +13,14 @@
         // https://developer.mozilla.org/en-US/docs/Web/CSS/time
         "units": ["%", "ch", "cm", "deg", "dpi", "dppx", "em", "ex", "in", "mm", "ms", "n", "pc", "pt", "px", "rem", "s", "vh", "vmax", "vmin", "vw"],
         // artules https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule
-        "atrules": ["annotation", "character-variant", "charset", "counter-style", "document", "font-face", "font-feature-values", "import", "keyframes", "media", "namespace", "ornaments", "page", "styleset", "stylistic", "supports", "swash", "viewport"],
-        "atrule_oneliners": ["charset", "import", "namespace"],
+        "atrules": {
+            "nested": ["annotation", "character-variant", "charset", "counter-style", "document", "font-face", "font-feature-values", "import", "keyframes", "media", "namespace", "ornaments", "page", "styleset", "stylistic", "supports", "swash", "viewport"],
+            "oneliners": ["charset", "import", "namespace"]
+        },
         // http://www.w3schools.com/cssref/css_selectors.asp
         "operators": {
             "singles": ["=", ">", "+", "~", "|", "^", "$", "*"],
-            "doubles": ["~=", "|=", "^=", "$=", "*="],
+            "doubles": ["~=", "|=", "^=", "$=", "*="]
         },
         // unique array: http://stackoverflow.com/questions/1960473/unique-values-in-an-array/39272981#39272981
         // var u = function(a) {a = a.filter(function (x, i, a_) { return a_.indexOf(x) === i; });return a.sort(function(a, b) {return a.localeCompare(b);});};
@@ -53,21 +55,13 @@
         // universal flags
         "parts": [],
         "counter": -1,
+        "mode": "selector",
         "INCLUDE_LAST": 1, // include the last character of wanted substring
-        // closing braces cannot be found in any of these index regions
-        // as they are where strings or comments exist
-        // "braceexcludes": [],
-        // string,comment loop flags
-        "wrap": null,
-        "pair": null,
-        "start": null,
         // selector/codeblock loop flags
         "nested": null,
-        "nestedlevel": -1,
+        "codeblock": null,
         // error/warning flags
         "warning": null,
-        "codeblock": null,
-        "mode": "selector"
     };
 
     function is_escaped(prev_char) {
@@ -101,10 +95,8 @@
     }
 
     function set_warning(msg, index, flags) {
-
         // set the warning
         flags.warning = msg + " " + index + ".";
-
     }
 
     var parsers = {
@@ -127,9 +119,6 @@
             var str = string.substring(i, (endquote_index + flags.INCLUDE_LAST));
             // add the string to array
             add(str, "string");
-
-            // add the string range to the excludes
-            // flags.braceexcludes.push([i, endquote_index, str]);
 
             // return new index
             return endquote_index;
@@ -157,9 +146,6 @@
             var str = string.substring(i, (endcomment_index + (flags.INCLUDE_LAST * 2)));
             // add the string to array
             add(str, "comment");
-
-            // add the string range to the excludes
-            // flags.braceexcludes.push([i, endcomment_index + 1]);
 
             // reset the index
             i = endcomment_index + 1; // add 1 to include the end slash
@@ -247,7 +233,7 @@
             }
 
             // split string into prefix and string
-            var parts = split(pseudo, "pseudos");
+            var parts = split(pseudo, db.pseudos);
             var prefix = parts.prefix,
                 str = parts.string,
                 is_valid_prefix = parts.valid.prefix,
@@ -291,7 +277,7 @@
             var atrule = string.substring(i, (findex + flags.INCLUDE_LAST));
 
             // split string into prefix and string
-            var parts = split(atrule, "atrules");
+            var parts = split(atrule, db.atrules.nested);
             var prefix = parts.prefix,
                 str = parts.string,
                 is_valid_prefix = parts.valid.prefix,
@@ -306,7 +292,7 @@
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
 
             // check if atrule is a oneliner..if so skip (not a code block)
-            if (!-~db.atrule_oneliners.indexOf(atrule)) {
+            if (!-~db.atrules.oneliners.indexOf(atrule)) {
                 // set the nested flag
                 flags.nested = true;
             }
@@ -326,7 +312,7 @@
             var fn = string.substring(rindex, i);
 
             // split string into prefix and string
-            var parts = split(fn, "functions");
+            var parts = split(fn, db.functions);
             var prefix = parts.prefix,
                 str = parts.string,
                 is_valid_prefix = parts.valid.prefix,
@@ -433,7 +419,7 @@
                 if (mode === "property") {
 
                     // split string into prefix and string
-                    var parts = split(str, "properties");
+                    var parts = split(str, db.properties);
                     var prefix = parts.prefix,
                         str = parts.string,
                         is_valid_prefix = parts.valid.prefix,
@@ -889,33 +875,6 @@
         "x": parsers.letter,
         "y": parsers.letter,
         "z": parsers.letter,
-        // letters (uppercase)
-        "A": parsers.letter,
-        "B": parsers.letter,
-        "C": parsers.letter,
-        "D": parsers.letter,
-        "E": parsers.letter,
-        "F": parsers.letter,
-        "G": parsers.letter,
-        "H": parsers.letter,
-        "I": parsers.letter,
-        "J": parsers.letter,
-        "K": parsers.letter,
-        "L": parsers.letter,
-        "M": parsers.letter,
-        "N": parsers.letter,
-        "O": parsers.letter,
-        "P": parsers.letter,
-        "Q": parsers.letter,
-        "R": parsers.letter,
-        "S": parsers.letter,
-        "T": parsers.letter,
-        "U": parsers.letter,
-        "V": parsers.letter,
-        "W": parsers.letter,
-        "X": parsers.letter,
-        "Y": parsers.letter,
-        "Z": parsers.letter,
         // numbers
         "0": parsers.number,
         "1": parsers.number,
@@ -970,7 +929,7 @@
             // console.log(i, char);
 
             // get parser
-            var parser_fn = lookup[char];
+            var parser_fn = lookup[char.toLowerCase()];
 
             // if the character is parsable run the returned function
             if (parser_fn) {
@@ -1069,7 +1028,7 @@
         return index;
     }
 
-    function split(string, type) {
+    function split(string, definitions) {
 
         // remove start atsign
         string = string.replace(/\@/, "");
@@ -1089,8 +1048,9 @@
 
         // check for validity
         prefix_valid = (-~db.prefixes.indexOf((prefix || "").replace(/-/g, "").toLowerCase())) ? true : false;
-        str_valid = (-~db[type].indexOf(str.toLowerCase())) ? true : false;
+        str_valid = (-~definitions.indexOf(str.toLowerCase())) ? true : false;
 
+        // return the object containing the prefix/string and their validity
         return {
             "prefix": prefix,
             "string": str,

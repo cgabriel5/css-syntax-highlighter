@@ -48,7 +48,7 @@
     };
 
     /**
-     * [flags: used throughout parsing]
+     * [flags: Used throughout parsing]
      * @type {Object}
      */
     var flags = {
@@ -61,44 +61,13 @@
         "nested": null,
         "codeblock": null,
         // error/warning flags
-        "warning": null,
+        "warning": null
     };
 
-    function is_escaped(prev_char) {
-        return (prev_char === "\\") ? true : false;
-    }
-
-    function ending(i, closing, string) {
-
-        var on = true;
-
-        while (on) {
-            // find new instance of closing string
-            i = string.indexOf(closing, i + 1);
-            if (!-~i) {
-                // stop loop
-                on = false;
-            } else {
-                // check that previous character is not escaping
-                var rindex = reverse(i, string, /[^\\]/);
-                if (!((i - rindex) & 1)) {
-                    // if the difference is a positive number the asterisk
-                    // is not being escaped and can be used ad the comment
-                    // end. otherwise, if the difference is odd then the
-                    // asterisk is being escaped and the search should continue
-                    on = false;
-                }
-            }
-        }
-        return i;
-
-    }
-
-    function set_warning(msg, index, flags) {
-        // set the warning
-        flags.warning = msg + " " + index + ".";
-    }
-
+    /**
+     * [parsers: The parser functions]
+     * @type {Object}
+     */
     var parsers = {
         "string": function(i, string, char, prev_char, next_char, flags) {
 
@@ -109,7 +78,7 @@
             if (!-~endquote_index) {
                 // this will return the originally provided index
                 // set warning message..will be displayed next loop iteration
-                set_warning("Possible unclosed string skipped at index", i, flags);
+                warn("Possible unclosed string skipped at index", i, flags);
                 // return here...and return the index
                 return i;
             }
@@ -135,7 +104,7 @@
             // set warning if comment is unclosed
             if (!-~endcomment_index) {
                 // set warning message..will be displayed next loop iteration
-                set_warning("Possible unclosed comment skipped at index", i, flags);
+                warn("Possible unclosed comment skipped at index", i, flags);
                 // return here...and return the index
                 return i;
             }
@@ -198,6 +167,13 @@
             if (flags.codeblock) {
                 // set the mode to x-property-value
                 flags.mode = "x-property-value";
+            }
+
+            // only run the the mode is allowed
+            if (!-~["selector"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
             }
 
             // if the next char after the current colon is anything
@@ -269,7 +245,11 @@
         "atrule": function(i, string, char, prev_char, next_char, flags) {
 
             // only run the the mode is allowed
-            if (!-~["selector"].indexOf(flags.mode)) return i;
+            if (!-~["selector"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
+            }
 
             // get the forward index
             var findex = forward(i, string, /[^a-z\-]/i);
@@ -304,7 +284,11 @@
         "openparens": function(i, string, char, prev_char, next_char, flags) {
 
             // only run the the mode is allowed
-            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) return i;
+            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
+            }
 
             // get the reverse index
             var rindex = reverse(i, string, /[^a-z\-]/i);
@@ -486,7 +470,6 @@
             // likewise, for the property "-webkit-box" the x will be
             // detected but because it is part of a word we must skip it
             if (-~db.tags.indexOf(str) && /[^a-z\-\[]/i.test(prev_char) && mode === "selector") {
-                // if (-~db.tags.indexOf(str) && -~["", "}"].indexOf(prev_char.trim()) && mode === "selector") {
                 type = "tag";
                 // check for colornames, fonts, media-types|features|logicals,
                 // properties...all of which do not have any numbers
@@ -526,7 +509,11 @@
         "number": function(i, string, char, prev_char, next_char, flags) {
 
             // only run the the mode is allowed
-            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) return i;
+            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
+            }
 
             // get the forward index
             var findex = forward(i, string, /[^0-9\.]/i);
@@ -634,7 +621,11 @@
         "dot": function(i, string, char, prev_char, next_char, flags) {
 
             // only run the the mode is allowed
-            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) return i;
+            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
+            }
 
             // get the forward index
             var findex = forward(i, string, /[^0-9]/i);
@@ -721,7 +712,11 @@
         "exclamationpoint": function(i, string, char, prev_char, next_char, flags) {
 
             // only run the the mode is allowed
-            if (!-~["x-property-value"].indexOf(flags.mode)) return i;
+            if (!-~["x-property-value"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
+            }
 
             // get the forward index
             var findex = forward(i, string, /[^a-z]/i);
@@ -745,7 +740,11 @@
         "openbracket": function(i, string, char, prev_char, next_char, flags) {
 
             // only run the the mode is allowed
-            if (!-~["selector"].indexOf(flags.mode)) return i;
+            if (!-~["selector"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                return i;
+            }
 
             // get the forward index
             var findex = forward(i, string, /[^a-z\-]/i);
@@ -829,9 +828,12 @@
             return i;
 
         }
-
     };
 
+    /**
+     * [lookup: Parser function lookup table.]
+     * @type {Object}
+     */
     var lookup = {
         // special characters
         "\"": parsers.string,
@@ -933,6 +935,7 @@
 
             // if the character is parsable run the returned function
             if (parser_fn) {
+                // reset the index to the returned index from the paser function
                 i = parser_fn(i, string, char, prev_char, next_char, flags);
             } else {
                 // simply add the character to array
@@ -942,7 +945,6 @@
         }
 
         // return string without the added initial padding
-        // return string.replace(/^\s{1}|\s{1}$/g, "");
         return flags.parts;
 
     }
@@ -1028,6 +1030,13 @@
         return index;
     }
 
+    /**
+     * @description [Splits the provided string into its prefix and its string.]
+     * @param  {String} string      [The string to split.]
+     * @param  {Array} definitions  [The list of valid CSS definitions.]
+     * @return {Object}             [Object containing the prefix/string and their
+     *                               validity.]
+     */
     function split(string, definitions) {
 
         // remove start atsign
@@ -1060,6 +1069,53 @@
             }
         }
 
+    }
+
+    /**
+     * @description [Returns the index where the provided character is found and
+     *               is not being escaped.]
+     * @param  {Number} i       [The index where to start search.]
+     * @param  {String} str     [The character to stop search at.]
+     * @param  {String} string  [The string used to search.]
+     * @return {Number}         [The index where the provided substring was found
+     *                           and is not being escaped.]
+     */
+    function ending(i, str, string) {
+
+        // loop flag
+        var on = true;
+
+        while (on) {
+            // find new instance of substring/character string
+            i = string.indexOf(str, i + 1);
+            if (!-~i) {
+                // stop loop
+                on = false;
+            } else {
+                // check that previous character is not escaping
+                var rindex = reverse(i, string, /[^\\]/);
+                if (!((i - rindex) & 1)) {
+                    // if the difference is a positive number the asterisk
+                    // is not being escaped and can be used ad the comment
+                    // end. otherwise, if the difference is odd then the
+                    // asterisk is being escaped and the search should continue
+                    on = false;
+                }
+            }
+        }
+        return i;
+
+    }
+
+    /**
+     * @description [The the flags.warn flag with the provided message.]
+     * @param {String} message   [The warning message.]
+     * @param {Number} index     [The index where the problem was spotted.]
+     * @param {Object} flags     [The flag object.]
+     */
+    function warn(message, index, flags) {
+        // set the warning
+        flags.warning = message + " " + index + ".";
     }
 
     self.addEventListener("message", function(e) {

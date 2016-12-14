@@ -79,6 +79,8 @@
                 // this will return the originally provided index
                 // set warning message..will be displayed next loop iteration
                 warn("Possible unclosed string skipped at index", i, flags);
+                // add to the array
+                add(char, null);
                 // return here...and return the index
                 return i;
             }
@@ -96,7 +98,12 @@
         "comment": function(i, string, char, prev_char, next_char, flags) {
 
             // next character must be an asterisk
-            if (next_char !== "*") return i;
+            if (next_char !== "*") {
+                // add to the array
+                add(char, null);
+                // return the index
+                return i;
+            }
 
             // grab everything until the comment ends
             var endcomment_index = string.indexOf("*/", i + 1);
@@ -105,6 +112,8 @@
             if (!-~endcomment_index) {
                 // set warning message..will be displayed next loop iteration
                 warn("Possible unclosed comment skipped at index", i, flags);
+                // add to the array
+                add(char, null);
                 // return here...and return the index
                 return i;
             }
@@ -173,6 +182,7 @@
             if (!-~["selector"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -181,7 +191,9 @@
             // the use of double colons like ::after. the pseudo "after"
             // will get picked up on the next iteration.
             if (/[^a-z\-]/i.test(next_char)) {
-                add(":", null);
+                // add to the array
+                add(char, null);
+                // return the index
                 return i;
             }
 
@@ -194,7 +206,8 @@
             if (string.charAt(findex + flags.INCLUDE_LAST) === "(") {
                 // skip so that the next iteration will start on the openparens
                 // and run the openparens function if check
-                add(":", null);
+                add(char, null);
+                // return the index
                 return findex;
             }
 
@@ -204,7 +217,8 @@
             // skip to the next iteration and add the :
             if (pseudo === "-") {
                 // add to the array
-                add(":", null);
+                add(char, null);
+                // return the index
                 return i;
             }
 
@@ -222,10 +236,9 @@
             add(":", null);
             if (prefix) add(prefix, (!is_valid_prefix) ? invalid_css : valid_css);
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
-            // reset the index
-            i = findex;
 
-            return i;
+            // return the index
+            return findex;
 
         },
         "semicolon": function(i, string, char, prev_char, next_char, flags) {
@@ -238,7 +251,9 @@
                 flags.mode = "property";
             }
 
-            add(";", null);
+            // add to the array
+            add(char, null);
+            // return the index
             return i;
 
         },
@@ -248,6 +263,7 @@
             if (!-~["selector"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -272,12 +288,12 @@
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
 
             // check if atrule is a oneliner..if so skip (not a code block)
-            if (!-~db.atrules.oneliners.indexOf(atrule)) {
+            if (!-~db.atrules.oneliners.indexOf(str)) {
                 // set the nested flag
                 flags.nested = true;
             }
 
-            // return the new index to reset loop at
+            // return the new
             return findex;
 
         },
@@ -287,6 +303,7 @@
             if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -310,7 +327,7 @@
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
             add("(", null);
 
-            // return the new index to reset loop at
+            // return the new
             return i;
 
         },
@@ -332,10 +349,12 @@
                 var minus_count = str.split("-").length - 1;
                 // skip if more than 2 consecutive minus signs in a row
                 if (minus_count > 2) {
-                    // add to array
-                    add("-", null);
+                    // add to the array
+                    add(char, null);
+                    // return the index
                     return i;
                 }
+
                 var dot_count = str.split(".").length - 1;
                 // skip if more than 2 consecutive minus signs in a row
                 if (dot_count > 1) {
@@ -346,8 +365,9 @@
                 }
                 // skip if no numbers are contained
                 if (!/[0-9]/.test(str)) {
-                    // add to array
-                    add(str, null);
+                    // add to the array
+                    add(char, null);
+                    // return the index
                     return i;
                 }
 
@@ -391,7 +411,12 @@
                 var mode = flags.mode;
 
                 // also skip to next iteration if the next character is also a hyphen
-                if (next_char === "-") return i;
+                if (next_char === "-") {
+                    // add to the array
+                    add(char, null);
+                    // return the index
+                    return i;
+                }
 
                 // next char cannot be an openparens, this means its a function
                 if (string.charAt(findex + flags.INCLUDE_LAST) === "(") {
@@ -436,7 +461,7 @@
             } else { // an empty hyphen followed by nothing
 
                 // add the string to array
-                add("-", null);
+                add(char, null);
 
             }
 
@@ -512,6 +537,7 @@
             if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -528,12 +554,15 @@
                 if (dot_count > 1) {
                     // add to the array
                     add(char, null);
+                    // return the index
                     return i;
                 }
+
                 // skip if no numbers are contained
                 if (!/[0-9]/.test(str)) {
                     // add to the array
                     add(char, null);
+                    // return the index
                     return i;
                 }
 
@@ -565,6 +594,11 @@
                     // if no unit found move index back prior to check
                     i--;
                 }
+
+            } else { // just add the char
+
+                // add to the array
+                add(char, null);
 
             }
 
@@ -612,6 +646,11 @@
                     i = findex;
                 }
 
+            } else { // just add the char
+
+                // add to the array
+                add(char, null);
+
             }
 
             // return the index
@@ -624,6 +663,7 @@
             if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -673,6 +713,7 @@
                 if (/[0-9]/.test(selector.charAt(1))) {
                     // add to the array
                     add(char, null);
+                    // return the index
                     return i;
                 }
 
@@ -680,6 +721,7 @@
                 if (selector.charAt(1) === "_" && /[0-9]/.test(selector.charAt(2))) {
                     // add to the array
                     add(char, null);
+                    // return the index
                     return i;
                 }
 
@@ -690,6 +732,7 @@
                 if (char === "." && /[0-9]/.test(selector.charAt(1))) {
                     // add to the array
                     add(char, null);
+                    // return the index
                     return i;
                 }
 
@@ -715,6 +758,7 @@
             if (!-~["x-property-value"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -731,6 +775,11 @@
                 // reset the index
                 i = findex;
 
+            } else { // just add the char
+
+                // add to the array
+                add(char, null);
+
             }
 
             // return the index
@@ -743,6 +792,7 @@
             if (!-~["selector"].indexOf(flags.mode)) {
                 // add to the array
                 add(char, null);
+                // return the index
                 return i;
             }
 
@@ -763,12 +813,10 @@
                 // reset the index
                 i = findex;
 
-            } else { // no attribute just empty brackets
+            } else { // no attribute just empty brackets, just add the char
 
-                // just add the openbracket and continue
                 // add to array
-                add("[", null);
-                // leave the index the same
+                add(char, null);
 
             }
 
@@ -778,7 +826,12 @@
         },
         "operator": function(i, string, char, prev_char, next_char, flags) {
 
-            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) return i;
+            if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
+                // add to the array
+                add(char, null);
+                // return the index
+                return i;
+            }
 
             // default let the operator be the current char
             var operator = char,
@@ -928,10 +981,10 @@
                 prev_char = string.charAt(i - 1),
                 next_char = string.charAt(i + 1);
 
-            // console.log(i, char);
-
             // get parser
             var parser_fn = lookup[char.toLowerCase()];
+
+            // console.log(i, char);
 
             // if the character is parsable run the returned function
             if (parser_fn) {

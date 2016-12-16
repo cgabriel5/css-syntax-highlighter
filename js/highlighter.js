@@ -147,7 +147,7 @@
             }
 
             // add to the array
-            add("{", null);
+            add("{", "punct");
 
             // return the index
             return i;
@@ -163,7 +163,7 @@
             }
 
             // add to the array
-            add("}", null);
+            add("}", "punct");
 
             // return the index
             return i;
@@ -181,7 +181,7 @@
             // only run the the mode is allowed
             if (!-~["selector"].indexOf(flags.mode)) {
                 // add to the array
-                add(char, null);
+                add(char, "punct");
                 // return the index
                 return i;
             }
@@ -192,7 +192,7 @@
             // will get picked up on the next iteration.
             if (/[^a-z\-]/i.test(next_char)) {
                 // add to the array
-                add(char, null);
+                add(char, "punct");
                 // return the index
                 return i;
             }
@@ -206,7 +206,7 @@
             if (string.charAt(findex + flags.INCLUDE_LAST) === "(") {
                 // skip so that the next iteration will start on the openparens
                 // and run the openparens function if check
-                add(char, null);
+                add(char, "punct");
                 // return the index
                 return findex;
             }
@@ -217,7 +217,7 @@
             // skip to the next iteration and add the :
             if (pseudo === "-") {
                 // add to the array
-                add(char, null);
+                add(char, "punct");
                 // return the index
                 return i;
             }
@@ -233,7 +233,7 @@
             var valid_css = "pseudo";
 
             // add to the array
-            add(":", null);
+            add(char, "punct");
             if (prefix) add(prefix, (!is_valid_prefix) ? invalid_css : valid_css);
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
 
@@ -252,7 +252,7 @@
             }
 
             // add to the array
-            add(char, null);
+            add(char, "punct");
             // return the index
             return i;
 
@@ -293,7 +293,7 @@
                 flags.nested = true;
             }
 
-            // return the new
+            // return the index
             return findex;
 
         },
@@ -302,7 +302,7 @@
             // only run the the mode is allowed
             if (!-~["selector", "x-property-value"].indexOf(flags.mode)) {
                 // add to the array
-                add(char, null);
+                add(char, "punct");
                 // return the index
                 return i;
             }
@@ -325,9 +325,27 @@
             // add to the array
             if (prefix) add(prefix, (!is_valid_prefix) ? invalid_css : valid_css);
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
-            add("(", null);
+            add(char, "punct");
 
-            // return the new
+            // return the index
+            return i;
+
+        },
+        "punct": function(i, string, char, prev_char, next_char, flags) {
+
+            // add to the array
+            add(char, "punct");
+
+            // return the index
+            return i;
+
+        },
+        "space": function(i, string, char, prev_char, next_char, flags) {
+
+            // add to the array
+            add(char, "space");
+
+            // return the index
             return i;
 
         },
@@ -381,9 +399,9 @@
                 i++;
 
                 // get the forward index
-                var findex = forward((i), string, /[^a-z]/i);
+                var findex = forward(i, string, /[^a-z]/i);
                 // get the fast forwarded string
-                var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
+                var unit = string.substring(i, (findex + flags.INCLUDE_LAST));
 
                 if (-~db.units.indexOf(unit)) {
 
@@ -576,9 +594,9 @@
                 i++;
 
                 // get the forward index
-                var findex = forward((i), string, /[^a-z]/i);
+                var findex = forward(i, string, /[^a-z]/i);
                 // get the fast forwarded string
-                var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
+                var unit = string.substring(i, (findex + flags.INCLUDE_LAST));
 
                 if (-~db.units.indexOf(unit)) {
 
@@ -672,21 +690,28 @@
             // get the fast forwarded string
             var str = string.substring(i, (findex + flags.INCLUDE_LAST));
 
+            // get the forward index
+            var findex_ = forward(i, string, /[^a-z0-9\-_]/i);
+            // get the fast forwarded string
+            var selector = string.substring(i, (findex_ + flags.INCLUDE_LAST));
+
             // potential number
             // has to be more than the dot
             if (str.length > 1) {
 
                 // add to array
                 add(str, "number");
+                // reset the index
+                i = findex;
 
                 // increase the index to the next iteration character
                 // to check for possible unit
                 i++;
 
                 // get the forward index
-                var findex = forward((i), string, /[^a-z]/i);
+                var findex = forward(i, string, /[^a-z]/i);
                 // get the fast forwarded string
-                var unit = string.substring((i), (findex + flags.INCLUDE_LAST));
+                var unit = string.substring(i, (findex + flags.INCLUDE_LAST));
 
                 if (-~db.units.indexOf(unit)) {
 
@@ -695,18 +720,19 @@
 
                     // add to array
                     add(unit, css_class);
+                    // reset the index
+                    i = findex;
 
                 } else {
                     // if no unit found move index back prior to check
                     i--;
                 }
 
-            } else { // potential class
+            } else if (selector && selector.length > 1) { // potential class
 
-                // get the forward index
-                var findex = forward(i, string, /[^a-z0-9\-_]/i);
-                // get the fast forwarded string
-                var selector = string.substring(i, (findex + flags.INCLUDE_LAST));
+                // reset the vars
+                str = selector;
+                findex = findex_;
 
                 // http://stackoverflow.com/questions/2812072/allowed-characters-for-css-identifiers/2812097#2812097
                 // selector cannot start with a number or hyphen then number
@@ -745,6 +771,11 @@
                     i = findex;
 
                 }
+
+            } else { // just add the char
+
+                // add the string to array
+                add(char, null);
 
             }
 
@@ -791,7 +822,7 @@
             // only run the the mode is allowed
             if (!-~["selector"].indexOf(flags.mode)) {
                 // add to the array
-                add(char, null);
+                add(char, "punct");
                 // return the index
                 return i;
             }
@@ -808,7 +839,7 @@
                 attribute = attribute.replace(/^\[/g, "");
 
                 // add to array
-                add("[", null);
+                add(char, "punct");
                 add(attribute, "attribute");
                 // reset the index
                 i = findex;
@@ -816,7 +847,7 @@
             } else { // no attribute just empty brackets, just add the char
 
                 // add to array
-                add(char, null);
+                add(char, "punct");
 
             }
 
@@ -896,13 +927,17 @@
         "{": parsers.openbrace,
         "}": parsers.closebrace,
         "(": parsers.openparens,
+        ")": parsers.punct,
         "[": parsers.openbracket,
+        "]": parsers.punct,
         ":": parsers.colon,
         ";": parsers.semicolon,
+        ",": parsers.punct,
         "!": parsers.exclamationpoint,
         "-": parsers.hyphen,
         ".": parsers.dot,
         "#": parsers.hash,
+        " ": parsers.space,
         // letters (lowercase)
         "a": parsers.letter,
         "b": parsers.letter,
@@ -991,8 +1026,9 @@
                 // reset the index to the returned index from the paser function
                 i = parser_fn(i, string, char, prev_char, next_char, flags);
             } else {
+                // console.log(i, char, string.charCodeAt(i), );
                 // simply add the character to array
-                add(char, null);
+                add(char, (string.charCodeAt(i) === 10) ? "enter" : null);
             }
 
         }
@@ -1023,7 +1059,10 @@
         var html_;
         parts.forEach(function(item, i) {
 
-            html_ = (!item[1]) ? item[0] : "<span class=\"lang-css-" + (item[1] || "none") + "\">" + item[0] + "</span>";
+            var char = item[0],
+                css_class = item[1];
+
+            html_ = "<span class=\"lang-css-" + (css_class || "none") + "\">" + char + "</span>";
             build.push(html_);
 
         });

@@ -20,6 +20,7 @@ pre {
     /*color: #5d5858;*/
     color: #434343;
     font-size: 15px;
+    font-family: Consolas, Menlo, Robot Mono, Inconsolata, Hack, Droid Sans Mono Slashed, Droid Sans Mono, Monaco, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Office Code Pro, Lucida Console, Courier New, monospace;
 }
 
 .lang-css-atrule {

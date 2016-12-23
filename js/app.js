@@ -48,6 +48,51 @@ document.onreadystatechange = function() {
 
         }, false);
 
+        // cache the mouseover-info-cont
+        var $mouseover_info_cont = document.getElementById("mouseover-info-cont"),
+            $mouseover_info = document.getElementById("mouseover-info");
+
+        // mouseover code
+        document.addEventListener("mouseover", function(e) {
+
+            // cache the target element
+            var $target = e.target;
+
+            // use delegation on SPAN elements with the class lang-css-*
+            if ($target.nodeName === "SPAN" && -~$target.className.indexOf("lang-css-")) {
+                // set the mouseover element's text to the token type
+                $mouseover_info.textContent = ($target.className.match(/lang\-css\-[\w\-]+/g) || ["Null"])[0].replace("lang-css-", "");
+                // show the element
+                $mouseover_info_cont.classList.remove("none");
+                // highlight the element being hovered
+                $target.classList.add("lang-css-highlight-yellow");
+                // hide the element on a timer
+                clearTimeout(window.timer_hide);
+            }
+
+        }, false);
+
+        // mouseover code
+        document.addEventListener("mouseout", function(e) {
+
+            // cache the target element
+            var $target = e.target;
+
+            // use delegation on SPAN elements with the class lang-css-*
+            if ($target.nodeName === "SPAN" && -~$target.className.indexOf("lang-css-")) {
+                // unhighlight the element
+                $target.classList.remove("lang-css-highlight-yellow");
+                // clear any previous timer
+                clearTimeout(window.timer_hide);
+                // hide the element on a timer
+                window.timer_hide = setTimeout(function() {
+                    // hide the mouseover element cont
+                    $mouseover_info_cont.classList.add("none");
+                }, 500);
+            }
+
+        }, false);
+
     }
 
 };

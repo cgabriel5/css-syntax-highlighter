@@ -1,0 +1,107 @@
+/* [----- CSS.RESET.START -----] */
+
+
+/* [box_sizing.styles](https://css-tricks.com/box-sizing/) */
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+:before,
+:after {
+    box-sizing: inherit;
+}
+
+body {
+    font: 300 16px/1.5 Lato;
+    margin: 0;
+    color: #2d3c49;
+}
+
+:focus {
+    /* remove default outline [http://stackoverflow.com/questions/17324960/copy-chrome-default-inputs-outline-style] */
+    outline: none;
+}
+
+
+/* [----- CSS.RESET.END -----] */
+
+
+/* [----- CSS.SITE.STYLES.START -----] */
+
+.none {
+    display: none;
+}
+
+.mouseover-info-cont {
+    top: 20px;
+    left: 20px;
+    position: fixed;
+    padding: 7px;
+    border-radius: 5px;
+    color: #333;
+    background: rgba(55, 55, 55, 0.95);
+    border-radius: 3px;
+    padding: 4px 8px;
+}
+
+.mouseover-info {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #FFF;
+    font-size: 13px;
+}
+
+.container {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    width: 100%;
+}
+
+.content {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    margin-top: 25px;
+    width: 625px;
+}
+
+.label {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.paragraph {
+    font-size: 20px;
+    padding-top: 10px;
+}
+
+.css-example {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-around;
+    align-items: initial;
+    align-content: space-around;
+    width: 600px;
+}
+
+textarea {
+    display: none;
+}
+
+
+/* [----- CSS.SITE.STYLES.END -----] */

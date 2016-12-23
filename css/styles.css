@@ -30,29 +30,76 @@ body {
 
 /* [----- CSS.SITE.STYLES.START -----] */
 
+.none {
+    display: none;
+}
+
+.mouseover-info-cont {
+    top: 20px;
+    left: 20px;
+    position: fixed;
+    padding: 7px;
+    border-radius: 5px;
+    color: #333;
+    background: rgba(55, 55, 55, 0.95);
+    border-radius: 3px;
+    padding: 4px 8px;
+}
+
+.mouseover-info {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #FFF;
+    font-size: 13px;
+}
+
 .container {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
+    -ms-flex-flow: column nowrap;
+        flex-flow: column nowrap;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -ms-flex-line-pack: center;
+        align-content: center;
 }
 
 .content-wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    align-items: center;
-    align-content: center;
+    -ms-flex-flow: column nowrap;
+        flex-flow: column nowrap;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -ms-flex-line-pack: center;
+        align-content: center;
     width: 100%;
 }
 
 .content {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
+    -ms-flex-flow: column nowrap;
+        flex-flow: column nowrap;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+    -ms-flex-line-pack: start;
+        align-content: flex-start;
     margin-top: 25px;
     width: 625px;
 }
@@ -68,11 +115,18 @@ body {
 }
 
 .css-example {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-around;
-    align-items: initial;
-    align-content: space-around;
+    -ms-flex-flow: row nowrap;
+        flex-flow: row nowrap;
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
+    -webkit-box-align: initial;
+        -ms-flex-align: initial;
+            align-items: initial;
+    -ms-flex-line-pack: distribute;
+        align-content: space-around;
     width: 600px;
 }
 

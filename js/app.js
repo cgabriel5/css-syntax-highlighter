@@ -53,7 +53,8 @@ document.onreadystatechange = function() {
 
         // *************************************************************************************
         // **Note: The following code is only used to denote the CSS class used to highlight the
-        // hovered element. This is only done and use for development purposes.
+        // hovered element in the upper left corner. This is only done and used for development
+        // purposes.
 
         // cache the mouseover-info-cont
         var $mouseover_info_cont = document.getElementById("mouseover-info-cont"),

@@ -6,22 +6,20 @@ document.onreadystatechange = function() {
 
     "use strict";
 
-    /* [functions.utils] */
-
-    /* [app.body] */
-
     // all resources have loaded (document + sub-resources)
     if (document.readyState === "complete") {
 
-        // get the code element
-        var element = document.getElementsByTagName("code")[0];
-        // cache code element's innerHTML (CSS string)
+        // Step 1: Get Needed Element(s) & CSS String
+        //
+        // element that will be injected the highlighted code
+        var $output_element = document.getElementsByTagName("code")[0];
+        // the CSS string to highlight
         var string = document.getElementsByTagName("textarea")[0].value;
 
-        // create new web worker
+        // Step 2: Setup Web Worker
+        //
+        // create the web worker
         var worker = new Worker("js/highlighter.js");
-        // send data to web worker
-        worker.postMessage({ "action": "start", "string": string });
 
         // listen for web worker messages
         worker.addEventListener("message", function(e) {
@@ -32,14 +30,11 @@ document.onreadystatechange = function() {
             // object collection of actions
             var actions = {
                 "done": function() {
-
-                    // replace old HTML with colored HTML
-                    element.innerHTML = message.highlighted;
-
+                    // inject highlighted CSS
+                    $output_element.innerHTML = message.highlighted;
                     // terminate worker
                     // worker.terminate(); // close worker from main file
-                    worker.postMessage({ "action": "stop" }); // cose worker from worker file
-
+                    worker.postMessage({ "action": "stop" }); // close worker from worker file
                 }
             };
 
@@ -47,6 +42,18 @@ document.onreadystatechange = function() {
             (actions[message.action] || new Function)();
 
         }, false);
+
+        // Step 3: Send Data To Web Worker
+        //
+        // send data to web worker
+        worker.postMessage({
+            "action": "start", // required
+            "string": string // <- your CSS string
+        });
+
+        // *************************************************************************************
+        // **Note: The following code is only used to denote the CSS class used to highlight the
+        // hovered element. This is only done and use for development purposes.
 
         // cache the mouseover-info-cont
         var $mouseover_info_cont = document.getElementById("mouseover-info-cont"),
@@ -72,7 +79,7 @@ document.onreadystatechange = function() {
 
         }, false);
 
-        // mouseover code
+        // mouseout code
         document.addEventListener("mouseout", function(e) {
 
             // cache the target element
@@ -92,6 +99,8 @@ document.onreadystatechange = function() {
             }
 
         }, false);
+
+        // *************************************************************************************
 
     }
 

@@ -1181,6 +1181,8 @@
         flags.warning = message + " " + index + ".";
     }
 
+    // =============================== [Line Separator]
+
     // the worker event listener
     self.addEventListener("message", function(e) {
 
@@ -1204,7 +1206,7 @@
         };
 
         // run the needed action
-        (actions[message.action] || new Function)();
+        (actions[message.action] || window.Function)();
 
     }, false);
 

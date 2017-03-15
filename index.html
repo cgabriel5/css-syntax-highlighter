@@ -3,11 +3,13 @@
 
 <head>
     <meta charset="utf-8">
+    <!-- {http://stackoverflow.com/questions/6771258/what-does-meta-http-equiv-x-ua-compatible-content-ie-edge-do} -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="css/styles.css" rel="stylesheet">
     <link href="css/highlighter.css" rel="stylesheet">
     <!-- nice google fonts: raleway, work sans, open sans, lato, oxygen -->
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet"> -->
     <script src="js/app.js"></script>
     <title>CSS Syntax Highlighter</title>
 </head>
@@ -22,7 +24,8 @@
                     <div class="paragraph">The CSS highlighter will parse the provided CSS and add syntax highlighting. The example below gives an idea of how the highlighted CSS will look like.</div>
                     <div class="css-example">
                         <pre><code class="lang-css-syntax"></code></pre>
-                        <textarea>/* CSS code from: http://designers.hubspot.com/docs/tools/boilerplate-css */
+                        <textarea>
+/* CSS code from: http://designers.hubspot.com/docs/tools/boilerplate-css */
 /* Images */
 img {
     max-width: 100%;
@@ -609,7 +612,8 @@ table pre {
 { width: 67px !important; }
 #recaptcha_area table#recaptcha_table #recaptcha_image
 { width:280px !important; }
-}</textarea>
+}
+                        </textarea>
                     </div>
                 </div>
             </div>

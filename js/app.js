@@ -39,7 +39,7 @@ document.onreadystatechange = function() {
             };
 
             // run the needed action
-            (actions[message.action] || new Function)();
+            (actions[message.action] || window.Function)();
 
         }, false);
 
@@ -48,7 +48,7 @@ document.onreadystatechange = function() {
         // send data to web worker
         worker.postMessage({
             "action": "start", // required
-            "string": string   // required; -- [your CSS string]
+            "string": string // required; -- [your CSS string]
         });
 
         // *************************************************************************************

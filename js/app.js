@@ -48,7 +48,7 @@ document.onreadystatechange = function() {
         // send data to web worker
         worker.postMessage({
             "action": "start", // required
-            "string": string // <- your CSS string
+            "string": string   // required; -- [your CSS string]
         });
 
         // *************************************************************************************

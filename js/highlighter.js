@@ -1,10 +1,14 @@
 (function() {
 
+    "use strict";
+
+    // =============================== Variables
+
     /**
-     * [db: CSS language keywords]
+     * [language: CSS language keywords]
      * @type {Object}
      */
-    var db = {
+    var language = {
         // css browser prefix list: http://stackoverflow.com/questions/5411026/list-of-css-vendor-prefixes
         "prefixes": ["ah", "apple", "atscwap", "hp", "khtml", "moz", "ms", "mso", "o", "prince", "rim", "ro", "tc", "webkit"],
         "colornames": ["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanchedalmond", "blue", "blueviolet", "brown", "burlywood", "cadetblue", "chartreuse", "chocolate", "coral", "cornflowerblue", "cornsilk", "crimson", "cyan", "darkblue", "darkcyan", "darkgoldenrod", "darkgray", "darkgreen", "darkgrey", "darkkhaki", "darkmagenta", "darkolivegreen", "darkorange", "darkorchid", "darkred", "darksalmon", "darkseagreen", "darkslateblue", "darkslategray", "darkslategrey", "darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dimgray", "dimgrey", "dodgerblue", "firebrick", "floralwhite", "forestgreen", "fuchsia", "gainsboro", "ghostwhite", "gold", "goldenrod", "gray", "green", "greenyellow", "grey", "honeydew", "hotpink", "indianred", "indigo", "ivory", "khaki", "lavender", "lavenderblush", "lawngreen", "lemonchiffon", "lightblue", "lightcoral", "lightcyan", "lightgoldenrodyellow", "lightgray", "lightgreen", "lightgrey", "lightpink", "lightsalmon", "lightseagreen", "lightskyblue", "lightslategray", "lightslategrey", "lightsteelblue", "lightyellow", "lime", "limegreen", "linen", "magenta", "maroon", "mediumaquamarine", "mediumblue", "mediumorchid", "mediumpurple", "mediumseagreen", "mediumslateblue", "mediumspringgreen", "mediumturquoise", "mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin", "navajowhite", "navy", "oldlace", "olive", "olivedrab", "orange", "orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise", "palevioletred", "papayawhip", "peachpuff", "peru", "pink", "plum", "powderblue", "purple", "red", "rosybrown", "royalblue", "saddlebrown", "salmon", "sandybrown", "seagreen", "seashell", "sienna", "silver", "skyblue", "slateblue", "slategray", "slategrey", "snow", "springgreen", "steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "whitesmoke", "yellow", "yellowgreen"],
@@ -22,15 +26,12 @@
             "singles": ["=", ">", "+", "~", "|", "^", "$", "*"],
             "doubles": ["~=", "|=", "^=", "$=", "*="]
         },
-        // unique array: http://stackoverflow.com/questions/1960473/unique-values-in-an-array/39272981#39272981
-        // var u = function(a) {a = a.filter(function (x, i, a_) { return a_.indexOf(x) === i; });return a.sort(function(a, b) {return a.localeCompare(b);});};
         // https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes
-        // "pseudos": [":active", ":after", ":any", ":before", ":checked", ":default", ":disabled", ":empty", ":enabled", ":file-upload-button", ":first", ":first-child", ":first-letter", ":first-line", ":first-of-type", ":focus", ":focus-inner", ":focus-inner", ":focus-inner", ":focus-inner", ":focusring", ":fullscreen", ":hover", ":in-range", ":indeterminate", ":inner-spin-button", ":invalid", ":last-child", ":last-of-type", ":left", ":link", ":only-child", ":only-of-type", ":optional", ":out-of-range", ":outer-spin-button", ":read-only", ":read-write", ":required", ":right", ":root", ":scope", ":search-cancel-button", ":search-decoration", ":selection", ":target", ":valid", ":visited"],
         "pseudos": ["active", "after", "any", "before", "checked", "clear", "default", "disabled", "empty", "enabled", "file-upload-button", "first", "first-child", "first-letter", "first-line", "first-of-type", "focus", "focus-inner", "focusring", "fullscreen", "hover", "in-range", "indeterminate", "inner-spin-button", "input-placeholder", "invalid", "last-child", "last-of-type", "left", "link", "only-child", "only-of-type", "optional", "out-of-range", "outer-spin-button", "placeholder", "read-only", "read-write", "required", "right", "root", "scope", "scrollbar", "scrollbar-thumb", "scrollbar-track-piece", "search-cancel-button", "search-decoration", "selection", "target", "valid", "visited"],
         // css property list: http://www.blooberry.com/indexdot/css/propindex/all.htm
         // unique array: http://stackoverflow.com/questions/6940103/how-do-i-make-an-array-with-unique-elements-i-e-remove-duplicates/23282067#23282067
         "properties": ["accelerator", "align-content", "align-items", "align-self", "alignment-baseline", "animation", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode", "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "app-region", "appearance", "azimuth", "backface-visibility", "background", "background-attachment", "background-blend-mode", "background-clip", "background-color", "background-image", "background-origin", "background-position", "background-position-x", "background-position-y", "background-repeat", "background-size", "baseline-shift", "behavior", "binding", "border", "border-bottom", "border-bottom-color", "border-bottom-colors", "border-bottom-left-radius", "border-bottom-right-radius", "border-bottom-style", "border-bottom-width", "border-collapse", "border-color", "border-horizontal-spacing", "border-image", "border-image-outset", "border-image-repeat", "border-image-slice", "border-image-source", "border-image-width", "border-left", "border-left-color", "border-left-colors", "border-left-style", "border-left-width", "border-radius", "border-radius-bottomleft", "border-radius-bottomright", "border-radius-topleft", "border-radius-topright", "border-right", "border-right-color", "border-right-colors", "border-right-style", "border-right-width", "border-spacing", "border-style", "border-top", "border-top-color", "border-top-colors", "border-top-left-radius", "border-top-right-radius", "border-top-style", "border-top-width", "border-vertical-spacing", "border-width", "bottom", "box-align", "box-decoration-break", "box-direction", "box-flex", "box-flex-group", "box-lines", "box-ordinal-group", "box-orient", "box-pack", "box-reflect", "box-shadow", "box-sizing", "break-after", "break-before", "break-inside", "buffered-rendering", "caption-side", "clear", "clip", "clip-path", "clip-rule", "color", "color-interpolation", "color-interpolation-filters", "color-rendering", "column-count", "column-gap", "column-rule-color", "column-rule-style", "column-rule-width", "column-span", "column-width", "content", "counter-increment", "counter-reset", "cue", "cue-after", "cue-before", "cursor", "cx", "cy", "d", "direction", "display", "dominant-baseline", "elevation", "empty-cells", "fill", "fill-opacity", "fill-rule", "filter", "flex", "flex-align", "flex-basis", "flex-direction", "flex-flow", "flex-grow", "flex-line-pack", "flex-order", "flex-pack", "flex-shrink", "flex-wrap", "float", "flood-color", "flood-opacity", "font", "font-family", "font-kerning", "font-size", "font-size-adjust", "font-smoothing", "font-stretch", "font-style", "font-variant", "font-variant-caps", "font-variant-ligatures", "font-variant-numeric", "font-weight", "height", "highlight", "hyphenate-character", "hyphens", "image-rendering", "ime-mode", "include-source", "interpolation-mode", "isolation", "justify-content", "layer-background-color", "layer-background-image", "layout-flow", "layout-grid", "layout-grid-char", "layout-grid-char-spacing", "layout-grid-line", "layout-grid-mode", "layout-grid-type", "left", "letter-spacing", "lighting-color", "line-break", "line-clamp", "line-height", "list-style", "list-style-image", "list-style-position", "list-style-type", "locale", "margin", "margin-after-collapse", "margin-before-collapse", "margin-bottom", "margin-left", "margin-right", "margin-top", "marker-end", "marker-mid", "marker-offset", "marker-start", "marks", "mask", "mask-box-image", "mask-box-image-outset", "mask-box-image-repeat", "mask-box-image-slice", "mask-box-image-source", "mask-box-image-width", "mask-clip", "mask-composite", "mask-image", "mask-origin", "mask-position", "mask-repeat", "mask-size", "mask-type", "max-height", "max-width", "min-height", "min-width", "mix-blend-mode", "motion-offset", "motion-path", "motion-rotation", "object-fit", "object-position", "opacity", "order", "orphans", "outline", "outline-color", "outline-offset", "outline-style", "outline-width", "overflow", "overflow-wrap", "overflow-x", "overflow-X", "overflow-y", "overflow-Y", "padding", "padding-bottom", "padding-left", "padding-right", "padding-top", "page", "page-break-after", "page-break-before", "page-break-inside", "paint-order", "pause", "pause-after", "pause-before", "perspective", "perspective-origin", "pitch", "pitch-range", "play-during", "pointer-events", "position", "print-color-adjust", "quotes", "r", "replace", "resize", "richness", "right", "rtl-ordering", "ruby-align", "ruby-overhang", "ruby-position", "rx", "ry", "scrollbar-3d-light-color", "scrollbar-arrow-color", "scrollbar-base-color", "scrollbar-dark-shadow-color", "scrollbar-face-color", "scrollbar-highlight-color", "scrollbar-shadow-color", "scrollbar-track-color", "set-link-source", "shape-image-threshold", "shape-margin", "shape-outside", "shape-rendering", "size", "speak", "speak-header", "speak-numeral", "speak-punctuation", "speech-rate", "stop-color", "stop-opacity", "stress", "stroke", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit", "stroke-opacity", "stroke-width", "tab-size", "table-layout", "tap-highlight-color", "text-align", "text-align-last", "text-anchor", "text-autospace", "text-combine", "text-decoration", "text-decoration-skip", "text-decorations-in-effect", "text-emphasis-color", "text-emphasis-position", "text-emphasis-style", "text-fill-color", "text-indent", "text-justify", "text-kashida-space", "text-orientation", "text-overflow", "text-rendering", "text-security", "text-shadow", "text-size-adjust", "text-stroke-color", "text-stroke-width", "text-transform", "text-underline-position", "top", "touch-action", "touch-callout", "transform", "transform-origin", "transform-style", "transition", "transition-delay", "transition-duration", "transition-property", "transition-timing-function", "unicode-bidi", "use-link-source", "user-drag", "user-focus", "user-input", "user-modify", "user-select", "vector-effect", "vertical-align", "visibility", "voice-family", "volume", "white-space", "widows", "width", "will-change", "word-break", "word-spacing", "word-wrap", "writing-mode", "x", "y", "z-index", "zoom"],
-        // http://www.w3schools.com/cssref/css_websafe_db.fontnames.asp
+        // http://www.w3schools.com/cssref/css_websafe_fonts.asp
         // https://www.granneman.com/webdev/coding/css/fonts-and-formatting/web-browser-font-defaults/
         "fontnames": ["Arial", "Courier", "cursive", "Georgia", "Helvetica", "Impact", "monospace", "sans-serif", "serif", "Tahoma", "Times", "Verdana"],
         "media": {
@@ -39,14 +40,12 @@
             "features": ["aspect-ratio", "color", "color-index", "device-aspect-ratio", "device-height", "device-width", "grid", "height", "max-aspect-ratio", "max-color", "max-color-index", "max-device-aspect-ratio", "max-device-height", "max-device-width", "max-height", "max-monochrome", "max-resolution", "max-width", "min-aspect-ratio", "min-color", "min-color-index", "min-device-aspect-ratio", "min-device-height", "min-device-width", "min-height", "min-monochrome", "min-resolution", "min-width", "monochrome", "orientation", "overflow-block", "overflow-inline", "resolution", "scan", "update-frequency", "width"],
             // https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries
             "logicals": ["and", "not", "only"]
-
         },
-        "keywords": {
+        "other": {
             "value": ["!important"],
             "selector": ["even", "odd"]
         }
     };
-
     /**
      * [flags: Used throughout parsing]
      * @type {Object}
@@ -63,7 +62,6 @@
         // error/warning flags
         "warning": null
     };
-
     /**
      * [parsers: The parser functions]
      * @type {Object}
@@ -72,7 +70,7 @@
         "string": function(i, string, char, prev_char, next_char, flags) {
 
             // grab everything until the string ends, take into account escaped quotes
-            var endquote_index = ending(i, char, string)
+            var endquote_index = ending(i, char, string);
 
             // set warning if quote is unclosed
             if (!-~endquote_index) {
@@ -143,7 +141,7 @@
                 // if flag is not set...it is a simple code block selector
                 // set the codeblock flag
                 flags.codeblock = true;
-                flags.mode = "property"
+                flags.mode = "property";
             }
 
             // add to the array
@@ -159,7 +157,7 @@
             if (flags.codeblock) {
                 // unset the flag
                 flags.codeblock = null;
-                flags.mode = "selector"
+                flags.mode = "selector";
             }
 
             // add to the array
@@ -223,7 +221,7 @@
             }
 
             // split string into prefix and string
-            var parts = split(pseudo, db.pseudos);
+            var parts = split(pseudo, language.pseudos);
             var prefix = parts.prefix,
                 str = parts.string,
                 is_valid_prefix = parts.valid.prefix,
@@ -273,7 +271,7 @@
             var atrule = string.substring(i, (findex + flags.INCLUDE_LAST));
 
             // split string into prefix and string
-            var parts = split(atrule, db.atrules.nested);
+            var parts = split(atrule, language.atrules.nested);
             var prefix = parts.prefix,
                 str = parts.string,
                 is_valid_prefix = parts.valid.prefix,
@@ -288,7 +286,7 @@
             if (str) add(str, (!is_valid_str) ? invalid_css : valid_css);
 
             // check if atrule is a oneliner..if so skip (not a code block)
-            if (!-~db.atrules.oneliners.indexOf(str)) {
+            if (!-~language.atrules.oneliners.indexOf(str)) {
                 // set the nested flag
                 flags.nested = true;
             }
@@ -313,7 +311,7 @@
             var fn = string.substring(rindex, i);
 
             // split string into prefix and string
-            var parts = split(fn, db.functions);
+            var parts = split(fn, language.functions);
             var prefix = parts.prefix,
                 str = parts.string,
                 is_valid_prefix = parts.valid.prefix,
@@ -403,7 +401,7 @@
                 // get the fast forwarded string
                 var unit = string.substring(i, (findex + flags.INCLUDE_LAST));
 
-                if (-~db.units.indexOf(unit)) {
+                if (-~language.units.indexOf(unit)) {
 
                     // check if "unit" is the nth selector
                     var css_class = (unit !== "n" ? "unit" : "nth");
@@ -446,7 +444,7 @@
                 if (mode === "property") {
 
                     // split string into prefix and string
-                    var parts = split(str, db.properties);
+                    var parts = split(str, language.properties);
                     var prefix = parts.prefix,
                         str = parts.string,
                         is_valid_prefix = parts.valid.prefix,
@@ -512,29 +510,29 @@
             // considered a tag element. this will prevent this case.
             // likewise, for the property "-webkit-box" the x will be
             // detected but because it is part of a word we must skip it
-            if (-~db.tags.indexOf(str) && /[^a-z\-\[]/i.test(prev_char) && mode === "selector") {
+            if (-~language.tags.indexOf(str) && /[^a-z\-\[]/i.test(prev_char) && mode === "selector") {
                 type = "tag";
                 // check for colornames, fonts, media-types|features|logicals,
                 // properties...all of which do not have any numbers
             } else if (/[^0-9]/.test(str)) { // only string that have letters
                 if (mode === "property") { // CSS properties
-                    if (-~db.properties.indexOf(str)) {
+                    if (-~language.properties.indexOf(str)) {
                         type = "property";
                     }
                 } else if (mode === "selector") { // anything part of a CSS selector
-                    if (-~db.media.types.indexOf(str)) {
+                    if (-~language.media.types.indexOf(str)) {
                         type = "media-type";
-                    } else if (-~db.media.features.indexOf(str)) {
+                    } else if (-~language.media.features.indexOf(str)) {
                         type = "media-feature";
-                    } else if (-~db.media.logicals.indexOf(str)) {
+                    } else if (-~language.media.logicals.indexOf(str)) {
                         type = "media-logical";
-                    } else if (-~db.keywords.selector.indexOf(str)) {
+                    } else if (-~language.other.selector.indexOf(str)) {
                         type = "selector-alternating";
                     }
                 } else if (mode === "x-property-value") { // anything part of a CSS declaration value
-                    if (-~db.fontnames.indexOf(str)) {
+                    if (-~language.fontnames.indexOf(str)) {
                         type = "fontname";
-                    } else if (-~db.colornames.indexOf(str)) {
+                    } else if (-~language.colornames.indexOf(str)) {
                         type = "colorname";
                     } else { // anything else gets the default color
                         type = "x-property-value";
@@ -598,7 +596,7 @@
                 // get the fast forwarded string
                 var unit = string.substring(i, (findex + flags.INCLUDE_LAST));
 
-                if (-~db.units.indexOf(unit)) {
+                if (-~language.units.indexOf(unit)) {
 
                     // check if "unit" is the nth selector
                     var css_class = (unit !== "n" ? "unit" : "nth");
@@ -713,7 +711,7 @@
                 // get the fast forwarded string
                 var unit = string.substring(i, (findex + flags.INCLUDE_LAST));
 
-                if (-~db.units.indexOf(unit)) {
+                if (-~language.units.indexOf(unit)) {
 
                     // check if "unit" is the nth selector
                     var css_class = (unit !== "n" ? "unit" : "nth");
@@ -799,7 +797,7 @@
             var keyword = string.substring(i, (findex + flags.INCLUDE_LAST));
 
             // check if string is in allowed keywords
-            if (-~db.keywords.value.indexOf(keyword.toLowerCase())) {
+            if (-~language.other.value.indexOf(keyword.toLowerCase())) {
 
                 // add to array
                 add(keyword, "keyword");
@@ -869,18 +867,18 @@
                 type = null;
 
             // check that single operator is allowed
-            if (-~db.operators.singles.indexOf(char)) {
+            if (-~language.operators.singles.indexOf(char)) {
 
                 // set the type to operator
                 type = "operator";
 
-                // var is_valid_operator = -~db.operator.doubles.indexOf(char) ? true : false;
+                // var is_valid_operator = -~language.operator.doubles.indexOf(char) ? true : false;
 
                 // check if next char is an equal sign
                 if (next_char === "=") {
 
                     // check if operator pair is a double
-                    if (-~db.operators.doubles.indexOf(char + next_char)) {
+                    if (-~language.operators.doubles.indexOf(char + next_char)) {
 
                         // combine both operators into one
                         operator = char + next_char;
@@ -913,7 +911,6 @@
 
         }
     };
-
     /**
      * [lookup: Parser function lookup table.]
      * @type {Object}
@@ -986,13 +983,12 @@
         "^": parsers.operator
     };
 
+    // =============================== Main Functions
+
     /**
-     * @description [After strings/comments/code blocks are placeholded this parser
-     *               is run. Parser runs on 3 modes (selector|property|x-property-value).
-     *               Either parsing selectors, CSS properties, or CSS value declarations.]
+     * @description [Parses the provided string.]
      * @param  {String} string [The string to parse.]
-     * @param  {String} mode   [The parsing mode.]
-     * @return {String}        [Syntax highlighted string.]
+     * @return {Array}        [Array containing the parsed out parts.]
      */
     function parser(string) {
 
@@ -1019,14 +1015,11 @@
             // get parser
             var parser_fn = lookup[char.toLowerCase()];
 
-            // console.log(i, char);
-
             // if the character is parsable run the returned function
             if (parser_fn) {
-                // reset the index to the returned index from the paser function
+                // reset the index to the returned index from the parser function
                 i = parser_fn(i, string, char, prev_char, next_char, flags);
             } else {
-                // console.log(i, char, string.charCodeAt(i), );
                 // simply add the character to array
                 add(char, (string.charCodeAt(i) === 10) ? "enter" : null);
             }
@@ -1039,68 +1032,34 @@
     }
 
     /**
-     * @description [Function placeholds strings/comments/code blocks. Essentially, prepares
-     *               the string for the parser() function.]
+     * @description [Main function calls the parser() function, removes left/right padding,
+     *               and joins the parts to make the final highlighted string.]
      * @param  {String} string [The string to parse.]
-     * @return {String}        [The placeholded string.]
+     * @return {String}        [The highlighted CSS string.]
      */
-    function highlighter(string) {
-
-        // parse string
+    function main(string) {
+        // parse the string
         var parts = parser(string);
 
         // remove initial padding from array (first and last item)
         parts.shift(); // remove start padding (first item)
         parts.pop(); // remove ending padding (last item)
 
-        // build string with highlighting
-        var build = [],
-            l = parts.length;
-        var html_;
-        parts.forEach(function(item, i) {
-
-            var char = item[0],
-                css_class = item[1];
-
-            html_ = "<span class=\"lang-css-" + (css_class || "none") + "\">" + char + "</span>";
-            build.push(html_);
-
-        });
-
-        // join build array and return string
-        return build.join("");
-
+        // join the parts to make the final highlighted string and return
+        return parts.join("");
     }
 
-    function add(str, class_name) {
-        // add the parts array
-        flags.parts.push([str, class_name]);
-    }
+    // =============================== Helper Functions
 
     /**
-     * @description [Going in reverse from the provided index, function returns the index
-     *               where the Regular Expression fails.]
-     * @param  {Number} index   [The index to start reverse search]
-     * @param  {String} string  [The string to use for reverse search.]
-     * @param  {RegExp} pattern [The RegExp pattern to test character.]
-     * @return {Number}         [The index where the RegExp failed.]
+     * @description [Adds the provided item and CSS class name to the HTML highlight template.]
+     * @param {Any} object        [The object that was parsed.]
+     * @param {String} class_name [The CSS class name.]
      */
-    function reverse(index, string, pattern) {
-
-        // loop backwards until pattern is false
-        for (var i = index - 1; i > -1; i--) {
-            // we add 1 to the returned index because the return happens on the
-            // characters that does not pass the pattern test. therefore, we add
-            // 1 because the next char (to its right) is the last char that did
-            // pass the test
-            if (pattern.test(string.charAt(i))) return i + 1;
-        }
-
-        // else return the provided index
-        return index;
-
+    function add(object, class_name) {
+        // add the parts array
+        flags.parts.push("<span class=\"lang-css-" + (class_name || "none") + "\">" + object + "</span>");
     }
-
     /**
      * @description [Going forward from the provided index, function returns the index
      *               where the Regular Expression fails.]
@@ -1110,18 +1069,35 @@
      * @return {Number}         [The index where the RegExp failed.]
      */
     function forward(index, string, pattern) {
-
-        // fastforward until anything pattern is false
+        // fast-forward until anything pattern is false
         for (var i = index + 1; i < string.length; i++) {
             // remove 1 from index to not include the character that
             // broke the pattern. we do not want that character
             if (pattern.test(string.charAt(i))) return i - 1;
         }
-
         // else return the provided index
         return index;
     }
-
+    /**
+     * @description [Going in reverse from the provided index, function returns the index
+     *               where the Regular Expression fails.]
+     * @param  {Number} index   [The index to start reverse search]
+     * @param  {String} string  [The string to use for reverse search.]
+     * @param  {RegExp} pattern [The RegExp pattern to test character.]
+     * @return {Number}         [The index where the RegExp failed.]
+     */
+    function reverse(index, string, pattern) {
+        // loop backwards until pattern is false
+        for (var i = index - 1; i > -1; i--) {
+            // we add 1 to the returned index because the return happens on the
+            // characters that does not pass the pattern test. therefore, we add
+            // 1 because the next char (to its right) is the last char that did
+            // pass the test
+            if (pattern.test(string.charAt(i))) return i + 1;
+        }
+        // else return the provided index
+        return index;
+    }
     /**
      * @description [Splits the provided string into its prefix and its string.]
      * @param  {String} string      [The string to split.]
@@ -1130,7 +1106,6 @@
      *                               validity.]
      */
     function split(string, definitions) {
-
         // remove start atsign
         string = string.replace(/\@/, "");
         // check for prefix pattern match
@@ -1148,7 +1123,7 @@
         }
 
         // check for validity
-        prefix_valid = (-~db.prefixes.indexOf((prefix || "").replace(/-/g, "").toLowerCase())) ? true : false;
+        prefix_valid = (-~language.prefixes.indexOf((prefix || "").replace(/-/g, "").toLowerCase())) ? true : false;
         str_valid = (-~definitions.indexOf(str.toLowerCase())) ? true : false;
 
         // return the object containing the prefix/string and their validity
@@ -1159,10 +1134,8 @@
                 "prefix": prefix_valid,
                 "string": str_valid
             }
-        }
-
+        };
     }
-
     /**
      * @description [Returns the index where the provided character is found and
      *               is not being escaped.]
@@ -1173,7 +1146,6 @@
      *                           and is not being escaped.]
      */
     function ending(i, str, string) {
-
         // loop flag
         var on = true;
 
@@ -1195,12 +1167,11 @@
                 }
             }
         }
+        // at the end return the index
         return i;
-
     }
-
     /**
-     * @description [The the flags.warn flag with the provided message.]
+     * @description [Sets the flags.warn flag with the provided message.]
      * @param {String} message   [The warning message.]
      * @param {Number} index     [The index where the problem was spotted.]
      * @param {Object} flags     [The flag object.]
@@ -1210,6 +1181,7 @@
         flags.warning = message + " " + index + ".";
     }
 
+    // the worker event listener
     self.addEventListener("message", function(e) {
 
         // cache the data object
@@ -1220,7 +1192,7 @@
             "start": function() {
 
                 // run the main function
-                var highlighted = highlighter(message.string);
+                var highlighted = main(message.string);
                 // send back data
                 self.postMessage({ "action": "done", "highlighted": highlighted });
 

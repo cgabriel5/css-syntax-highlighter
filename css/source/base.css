@@ -1,0 +1,209 @@
+/*! (opinionated) base styles adapted from: sanitize.css v5.0.0, github.com/jonathantneal/sanitize.css */
+
+
+/**
+ * 1. Remove repeating backgrounds in all browsers (opinionated).
+ * 2. Add box sizing inheritence in all browsers (opinionated).
+ */
+
+*,
+::before,
+::after {
+    background-repeat: no-repeat;
+    /* 1 */
+    box-sizing: inherit;
+    /* 2 */
+}
+
+
+/**
+ * 1. Add text decoration inheritance in all browsers (opinionated).
+ * 2. Add vertical alignment inheritence in all browsers (opinionated).
+ */
+
+::before,
+::after {
+    text-decoration: inherit;
+    /* 1 */
+    vertical-align: inherit;
+    /* 2 */
+}
+
+
+/**
+ * 1. Add border box sizing in all browsers (opinionated).
+ * 2. Add the default cursor in all browsers (opinionated).
+ */
+
+html {
+    box-sizing: border-box;
+    /* 1 */
+    cursor: default;
+    /* 2 */
+}
+
+
+/**
+ * 1. Remove the margin in all browsers (opinionated).
+ * 2. Use the system's available font. Sourced from [https://medium.design/system-shock-6b1dc6d6596f#.xts8r3m0i], [https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/], & [https://css-tricks.com/snippets/css/system-font-stack/] (opinionated).
+ */
+
+body {
+    margin: 0;
+    /* 1 */
+    color: #2d3c49;
+    font: 400 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    /* 2 */
+}
+
+
+/**
+ * 1. Remove the default outline. Source [http://stackoverflow.com/questions/17324960/copy-chrome-default-inputs-outline-style] (opinionated).
+ */
+
+:focus {
+    outline: none;
+    /* 1 */
+}
+
+
+/**
+ * Remove the list style on navigation lists in all browsers (opinionated).
+ */
+
+nav ol,
+nav ul {
+    list-style: none;
+}
+
+
+/*
+ * Remove the text shadow on text selections (opinionated).
+ * 1. Restore the coloring undone by defining the text shadow (opinionated).
+ */
+
+::-moz-selection {
+    background-color: #b3d4fc;
+    /* 1 */
+    color: #000000;
+    /* 1 */
+    text-shadow: none;
+}
+
+::selection {
+    background-color: #b3d4fc;
+    /* 1 */
+    color: #000000;
+    /* 1 */
+    text-shadow: none;
+}
+
+
+/*
+ * Change the alignment on media elements in all browers (opinionated).
+ */
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+    vertical-align: middle;
+}
+
+
+/**
+ * Change the fill color to match the text color in all browsers (opinionated).
+ */
+
+svg {
+    fill: currentColor;
+}
+
+
+/**
+ * Inherit styling in all browsers (opinionated).
+ */
+
+button,
+input,
+select,
+textarea {
+    background-color: transparent;
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+
+/**
+ * 1. Remove the default vertical scrollbar in IE.
+ * 2. Change the resize direction on textareas in all browsers (opinionated).
+ */
+
+textarea {
+    overflow: auto;
+    /* 1 */
+    resize: vertical;
+    /* 2 */
+}
+
+
+/*
+ * Remove the tapping delay on clickable elements (opinionated).
+ * 1. Remove the tapping delay in IE 10.
+ */
+
+a,
+area,
+button,
+input,
+label,
+select,
+summary,
+textarea,
+[tabindex] {
+    -ms-touch-action: manipulation;
+    /* 1 */
+    touch-action: manipulation;
+}
+
+
+/**
+ * Change the cursor on busy elements (opinionated).
+ */
+
+[aria-busy="true"] {
+    cursor: progress;
+}
+
+
+/*
+ * Change the cursor on control elements (opinionated).
+ */
+
+[aria-controls] {
+    cursor: pointer;
+}
+
+
+/*
+ * Change the display on visually hidden accessible elements (opinionated).
+ */
+
+[aria-hidden="false"][hidden]:not(:focus) {
+    clip: rect(0, 0, 0, 0);
+    display: inherit;
+    position: absolute;
+}
+
+
+/*
+ * Change the cursor on disabled, not-editable, or otherwise
+ * inoperable elements (opinionated).
+ */
+
+[aria-disabled] {
+    cursor: default;
+}

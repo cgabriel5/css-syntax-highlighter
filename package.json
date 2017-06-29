@@ -1,0 +1,50 @@
+{
+    "author": "Carlos A. Gabriel <carlosgabriel71@yahoo.com> (https://github.com/cgabriel5)",
+    "bugs": {
+        "url": "https://github.com/cgabriel5/css-syntax-highlighter/issues"
+    },
+    "dependencies": {},
+    "description": "A CSS syntax highlighter.",
+    "devDependencies": {
+        "alphabetize-object-keys": "^1.0.4",
+        "autoprefixer": "^7.0.1",
+        "browser-sync": "^2.18.8",
+        "colors": "^1.1.2",
+        "dateformat": "^2.0.0",
+        "del": "^2.2.2",
+        "find-free-port": "^1.0.2",
+        "gulp": "^3.9.1",
+        "gulp-autoprefixer": "^4.0.0",
+        "gulp-clean": "^0.3.2",
+        "gulp-clean-css": "^3.2.0",
+        "gulp-concat": "^2.6.1",
+        "gulp-if": "^2.0.2",
+        "gulp-jsbeautifier": "^2.1.0",
+        "gulp-minify-html": "^1.0.6",
+        "gulp-purifycss": "^0.2.0",
+        "gulp-rename": "^1.2.2",
+        "gulp-replace": "^0.5.4",
+        "gulp-shorthand": "^1.1.0",
+        "gulp-uglify": "^2.1.2",
+        "json-file": "^0.1.0",
+        "markdown-styles": "^3.1.9",
+        "node-notifier": "^5.1.2",
+        "opn": "^5.0.0",
+        "prompt": "^1.0.0",
+        "pump": "^1.0.2",
+        "run-sequence": "^1.2.2",
+        "yargs": "^8.0.1"
+    },
+    "homepage": "https://github.com/cgabriel5/css-syntax-highlighter#readme",
+    "license": "MIT",
+    "name": "css-syntax-highlighter",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cgabriel5/css-syntax-highlighter.git"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "version": "0.0.1"
+}

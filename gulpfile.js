@@ -1,4 +1,5 @@
 var path = require("path");
+var fs = require("fs");
 // -------------------------------------
 var autoprefixer = require("gulp-autoprefixer");
 var clean = require("gulp-clean");
@@ -56,11 +57,25 @@ var bs1 = bs.create("localhost"),
     };
 // init HTML files + minify
 gulp.task("html", function(done) {
+    // regexp used for pre and post HTML variable injection
+    // get regexp info
+    var r = regexp.html;
+    var r_pre = r.pre;
+    var r_post = r.post;
+    var r_func = function(match) {
+        var filename = "html/source/regexp/" + match.replace(/\$\:(pre|post)\{|\}$/g, "") + ".text";
+        // check that file exists before opening/reading...
+        // return undefined when file does not exist...else return its contents
+        return (!fs.existsSync(filename)) ? "undefined" : fs.readFileSync(filename)
+            .toString();
+    };
     pump([gulp.src(paths.tasks.html, {
             cwd: "html/source/"
         }),
         concat("index.html"),
+        replace(new RegExp(r_pre.p, r_pre.f), r_func),
         beautify(beautify_options),
+        replace(new RegExp(r_post.p, r_post.f), r_func),
         gulp.dest("./"),
         minify_html(),
         gulp.dest("dist/"),
@@ -68,11 +83,13 @@ gulp.task("html", function(done) {
     ], done);
 });
 gulp.task("precssapp-clean-styles", function(done) {
+    // regexp used for custom CSS code modifications
     // get regexp info
-    var pf = regexp.prefixes;
-    var lz = regexp.lead_zeros;
-    var ez = regexp.empty_zero;
-    var lh = regexp.lowercase_hex;
+    var r = regexp.css;
+    var pf = r.prefixes;
+    var lz = r.lead_zeros;
+    var ez = r.empty_zero;
+    var lh = r.lowercase_hex;
     pump([gulp.src(["styles.css"], {
             cwd: "css/source/"
         }),
@@ -184,9 +201,11 @@ gulp.task("jslibsource", function(done) {
         beautify(beautify_options),
         gulpif(is_library, rename("lib.js")),
         gulpif(is_library, gulp.dest("lib/")),
+        gulpif(is_library, gulp.dest("dist/lib/")), // <-- also add to dist/ directory
         uglify(),
         gulpif(is_library, rename("lib.min.js")),
         gulpif(is_library, gulp.dest("lib/")),
+        gulpif(is_library, gulp.dest("dist/lib/")), // <-- also add to dist/ directory
         bs1.stream()
     ], done);
 });

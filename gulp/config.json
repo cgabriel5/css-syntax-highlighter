@@ -2,31 +2,12 @@
     "__type__": "library",
     "options": {
         "autoprefixer": {
-            "browsers": [
-                "ie >= 10",
-                "ie_mob >= 10",
-                "ff >= 30",
-                "chrome >= 34",
-                "safari >= 7",
-                "opera >= 23",
-                "ios >= 7",
-                "android >= 4.4",
-                "bb >= 10",
-                "UCAndroid 11",
-                "OperaMini All",
-                "Samsung >= 4",
-                "ChromeAndroid >= 56"
-            ],
+            "browsers": ["ie >= 10", "ie_mob >= 10", "ff >= 30", "chrome >= 34", "safari >= 7", "opera >= 23", "ios >= 7", "android >= 4.4", "bb >= 10", "UCAndroid 11", "OperaMini All", "Samsung >= 4", "ChromeAndroid >= 56"],
             "cascade": false
         },
         "beautify": {
             "css": {
-                "allowed_file_extensions": [
-                    "css",
-                    "scss",
-                    "sass",
-                    "less"
-                ],
+                "allowed_file_extensions": ["css", "scss", "sass", "less"],
                 "end_with_newline": false,
                 "indent_char": " ",
                 "indent_size": 4,
@@ -35,14 +16,7 @@
                 "selector_separator_newline": true
             },
             "html": {
-                "allowed_file_extensions": [
-                    "htm",
-                    "html",
-                    "xhtml",
-                    "shtml",
-                    "xml",
-                    "svg"
-                ],
+                "allowed_file_extensions": ["htm", "html", "xhtml", "shtml", "xml", "svg"],
                 "brace_style": "collapse",
                 "end_with_newline": false,
                 "indent_char": " ",
@@ -52,39 +26,11 @@
                 "indent_size": 4,
                 "max_preserve_newlines": 0,
                 "preserve_newlines": true,
-                "unformatted": [
-                    "a",
-                    "span",
-                    "img",
-                    "code",
-                    "pre",
-                    "sub",
-                    "sup",
-                    "em",
-                    "strong",
-                    "b",
-                    "i",
-                    "u",
-                    "strike",
-                    "big",
-                    "small",
-                    "pre",
-                    "h1",
-                    "h2",
-                    "h3",
-                    "h4",
-                    "h5",
-                    "h6"
-                ],
+                "unformatted": ["a", "span", "img", "code", "pre", "sub", "sup", "em", "strong", "b", "i", "u", "strike", "big", "small", "pre", "h1", "h2", "h3", "h4", "h5", "h6"],
                 "wrap_line_length": 0
             },
             "js": {
-                "allowed_file_extensions": [
-                    "js",
-                    "json",
-                    "jshintrc",
-                    "jsbeautifyrc"
-                ],
+                "allowed_file_extensions": ["js", "json", "jshintrc", "jsbeautifyrc"],
                 "brace_style": "collapse",
                 "break_chained_methods": true,
                 "e4x": false,
@@ -107,110 +53,63 @@
             }
         },
         "browsers": {
-            "list": [
-                "google-chrome"
-            ]
+            "list": ["google-chrome"]
         }
     },
     "paths": {
         "flavor": {
-            "jsapp": [
-                "lib.iife.top.js",
-                "lib.library.top.js",
-                "modules/fn.helpers.js",
-                "modules/constants.js",
-                "modules/fn.core.js",
-                "modules/constructor.js",
-                "lib.library.end.js",
-                "modules/globals.js",
-                "modules/bottom.js",
-                "lib.iife.end.js",
-                "test.js"
-            ],
-            "jslibs": [
-                "fastclick.js",
-                "libs.init.js"
-            ]
+            "jsapp": ["lib.iife.top.js", "lib.library.top.js", "modules/fn.helpers.js", "modules/constants.js", "modules/fn.core.js", "modules/constructor.js", "lib.library.end.js", "modules/globals.js", "modules/bottom.js", "lib.iife.end.js", "test.js"],
+            "jslibs": ["fastclick.js", "libs.init.js"]
         },
-        "order": [
-            "cssapp",
-            "csslibs",
-            "csslibsfolder",
-            "jsapp",
-            "jslibsource",
-            "jslibs",
-            "jslibsfolder",
-            "img",
-            "html",
-            "readme"
-        ],
+        "order": ["cssapp", "csslibs", "csslibsfolder", "jsapp", "jslibsource", "jslibs", "jslibsfolder", "img", "html", "readme"],
         "tasks": {
-            "cssapp": [
-                "normalize.css",
-                "base.css",
-                "styles.css",
-                "helpers.css",
-                "highlighter.css"
-            ],
-            "csslibs": [
-                "font-awesome-4.7.0/css/font-awesome.css"
-            ],
-            "html": [
-                "index.top.html",
-                "head/start.html",
-                "head/meta.html",
-                "head/css.html",
-                "head/js.html",
-                "head/end.html",
-                "body/start.html",
-                "body/content.html",
-                "body/js.html",
-                "body/end.html",
-                "index.end.html"
-            ]
+            "cssapp": ["normalize.css", "base.css", "styles.css", "helpers.css", "highlighter.css"],
+            "csslibs": ["font-awesome-4.7.0/css/font-awesome.css"],
+            "html": ["index.top.html", "head/start.html", "head/meta.html", "head/css.html", "head/js.html", "head/end.html", "body/start.html", "body/content.html", "body/js.html", "body/end.html", "index.end.html"]
         },
         "watch": {
-            "css": [
-                "libs/**/*.css",
-                "source/*.css"
-            ],
-            "html": [
-                "i*.html",
-                "head/*.html",
-                "body/*.html"
-            ],
-            "img": [
-                "img/**/*.{jpg,png,gif}"
-            ],
-            "js": [
-                "libs/**/*.js",
-                "source/*.js",
-                "source/modules/*.js"
-            ]
+            "css": ["libs/**/*.css", "source/*.css"],
+            "html": ["i*.html", "head/*.html", "body/*.html"],
+            "img": ["img/**/*.{jpg,png,gif}"],
+            "js": ["libs/**/*.js", "source/*.js", "source/modules/*.js"]
         }
     },
     "regexp": {
-        "empty_zero": {
-            "__comment": "0px => 0 (empty_zeros) & 0.0 => 0",
-            "f": "gi",
-            "p": "(\\b0(cm|em|ex|in|mm|pc|pt|px|vh|vw|vmin)|0\\.0[^\\d])",
-            "r": "0"
+        "css": {
+            "empty_zero": {
+                "__comment": "0px => 0 (empty_zeros) & 0.0 => 0",
+                "f": "gi",
+                "p": "(\\b0(cm|em|ex|in|mm|pc|pt|px|vh|vw|vmin)|0\\.0[^\\d])",
+                "r": "0"
+            },
+            "lead_zeros": {
+                "__comment": ".23 => 0.23",
+                "f": "g",
+                "p": "([ |,|:])(\\.\\d+)",
+                "r": "$10$2"
+            },
+            "lowercase_hex": {
+                "__comment": "css color lowercase check /#[A-Fa-f0-9]{3,6}/",
+                "f": "gi",
+                "p": "#[a-f0-9]{3,6}"
+            },
+            "prefixes": {
+                "f": "gi",
+                "p": "(\\s+)?\\-(moz|o|webkit|ms|khtml)\\-(?!font-smoothing|osx|print|backface).+?;",
+                "r": ""
+            }
         },
-        "lead_zeros": {
-            "__comment": ".23 => 0.23",
-            "f": "g",
-            "p": "([ |,|:])(\\.\\d+)",
-            "r": "$10$2"
-        },
-        "lowercase_hex": {
-            "__comment": "css color lowercase check /#[A-Fa-f0-9]{3,6}/",
-            "f": "gi",
-            "p": "#[a-f0-9]{3,6}"
-        },
-        "prefixes": {
-            "f": "gi",
-            "p": "(\\s+)?\\-(moz|o|webkit|ms|khtml)\\-(?!font-smoothing|osx|print|backface).+?;",
-            "r": ""
+        "html": {
+            "pre": {
+                "f": "gi",
+                "p": "\\$:pre\\{[\\w\\d-_]+\\}",
+                "r": ""
+            },
+            "post": {
+                "f": "gi",
+                "p": "\\$:post\\{[\\w\\d-_]+\\}",
+                "r": ""
+            }
         }
     }
 }

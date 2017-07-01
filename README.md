@@ -8,7 +8,7 @@ See example of highlighted CSS [here](https://cgabriel5.github.io/css-syntax-hig
 
 ### How To Use
 
-Take a look at `js/app.js`, `js/source/test.js`, `lib/lib.js`, and `index.html` to see how it's used. Colors can be customized by editing `css/styles.css`.
+Take a look at `js/app.js`, `js/source/test.js`, `lib/lib.js`, and `index.html` to see how it's used. Colors can be customized by editing `css/source/highlighter.css`.
 
 ### Issues
 

@@ -32,6 +32,7 @@ var config = require("./gulp/config.json");
 var paths = config.paths;
 var options = config.options;
 var beautify_options = options.beautify;
+var autoprefixer_options = options.autoprefixer;
 var regexp = config.regexp;
 var __type__ = config.__type__;
 // -------------------------------------
@@ -109,7 +110,7 @@ gulp.task("cssapp", ["precssapp-clean-styles"], function(done) {
     pump([gulp.src(paths.tasks.cssapp, {
             cwd: "css/source/"
         }),
-        autoprefixer(),
+        autoprefixer(autoprefixer_options),
         shorthand(),
         concat("app.css"),
         beautify(beautify_options),
@@ -126,7 +127,7 @@ gulp.task("csslibs", function(done) {
         }),
         concat("libs.css"),
         beautify(beautify_options),
-        autoprefixer(),
+        autoprefixer(autoprefixer_options),
         shorthand(),
         gulp.dest("css/"),
         clean_css(),

@@ -82,7 +82,6 @@ figure {
 */
 
 hr {
-    -webkit-box-sizing: content-box;
     box-sizing: content-box;
     /* 1 */
     height: 0;
@@ -351,7 +350,6 @@ button:-moz-focusring,
 */
 
 legend {
-    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     /* 1 */
     color: inherit;
@@ -396,7 +394,6 @@ textarea {
 
 [type="checkbox"],
 [type="radio"] {
-    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     /* 1 */
     padding: 0;
@@ -522,7 +519,6 @@ template {
 ::after {
     background-repeat: no-repeat;
     /* 1 */
-    -webkit-box-sizing: inherit;
     box-sizing: inherit;
     /* 2 */
 }
@@ -548,7 +544,6 @@ template {
  */
 
 html {
-    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     /* 1 */
     cursor: default;
@@ -746,36 +741,46 @@ textarea,
 
 .container {
     display: -webkit-box;
+    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
+    -webkit-flex-flow: column nowrap;
     -ms-flex-flow: column nowrap;
     flex-flow: column nowrap;
     -webkit-box-pack: center;
+    -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
     -webkit-box-align: center;
+    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
+    -webkit-align-content: center;
     -ms-flex-line-pack: center;
     align-content: center;
 }
 
 .content-wrapper {
     display: -webkit-box;
+    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
+    -webkit-flex-flow: column nowrap;
     -ms-flex-flow: column nowrap;
     flex-flow: column nowrap;
     -webkit-box-pack: center;
+    -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
     -webkit-box-align: center;
+    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
+    -webkit-align-content: center;
     -ms-flex-line-pack: center;
     align-content: center;
     width: 100%;
@@ -783,18 +788,23 @@ textarea,
 
 .content {
     display: -webkit-box;
+    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
+    -webkit-flex-flow: column nowrap;
     -ms-flex-flow: column nowrap;
     flex-flow: column nowrap;
     -webkit-box-pack: start;
+    -webkit-justify-content: flex-start;
     -ms-flex-pack: start;
     justify-content: flex-start;
     -webkit-box-align: start;
+    -webkit-align-items: flex-start;
     -ms-flex-align: start;
     align-items: flex-start;
+    -webkit-align-content: flex-start;
     -ms-flex-line-pack: start;
     align-content: flex-start;
     margin-top: 25px;
@@ -813,17 +823,22 @@ textarea,
 
 .css-example {
     display: -webkit-box;
+    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
+    -webkit-flex-flow: row nowrap;
     -ms-flex-flow: row nowrap;
     flex-flow: row nowrap;
+    -webkit-justify-content: space-around;
     -ms-flex-pack: distribute;
     justify-content: space-around;
     -webkit-box-align: initial;
+    -webkit-align-items: initial;
     -ms-flex-align: initial;
     align-items: initial;
+    -webkit-align-content: space-around;
     -ms-flex-line-pack: distribute;
     align-content: space-around;
     width: 600px;
@@ -989,7 +1004,6 @@ pre {
 .lang-css-highlight-yellow {
     color: #333;
     background: rgba(255, 204, 0, 0.45);
-    -webkit-box-shadow: 0px 0px 0px 2px #ffcc00;
     box-shadow: 0px 0px 0px 2px #ffcc00;
     border-radius: 3px;
     cursor: default;
@@ -999,7 +1013,6 @@ pre {
 .lang-css-highlight-blue {
     color: #333;
     background: rgba(41, 100, 236, 0.1);
-    -webkit-box-shadow: 0px 0px 0px 2px #2964ec;
     box-shadow: 0px 0px 0px 2px #2964ec;
     border-radius: 3px;
     cursor: default;

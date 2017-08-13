@@ -38,12 +38,18 @@
 <p>Take a look at <code>js/app.js</code>, <code>js/source/test.js</code>, <code>lib/lib.js</code>, and <code>index.html</code> to see how the demo is made. Colors can be customized by editing <code>css/source/highlighter.css</code>.</p>
 <p><a name="usage-general-example"></a>
 <strong>Step By Step</strong> &mdash; General usage.</p>
-<p><strong>Step 1</strong>: Get String To Parse</p>
+<ul class="list">
+<li><strong>Step 1</strong>: Get String To Parse</li>
+</ul>
 <pre class="hljs"><code><span class="hljs-comment">// Get string either from the DOM (i.e. text value from textarea, input...etc) </span>
 <span class="hljs-comment">// or from server via an Ajax request.</span>
 
-<span class="hljs-keyword">var</span> myString = <span class="hljs-string">".red-text { color: red; }"</span>;</code></pre><p><strong>Step 2</strong>: Create Web Worker</p>
-<pre class="hljs"><code><span class="hljs-keyword">var</span> worker = <span class="hljs-keyword">new</span> Worker(<span class="hljs-string">"path/to/lib.js"</span>);</code></pre><p><strong>Step 3</strong>: Listen To Web Worker</p>
+<span class="hljs-keyword">var</span> myString = <span class="hljs-string">".red-text { color: red; }"</span>;</code></pre><ul class="list">
+<li><strong>Step 2</strong>: Create Web Worker</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-keyword">var</span> worker = <span class="hljs-keyword">new</span> Worker(<span class="hljs-string">"path/to/lib.js"</span>);</code></pre><ul class="list">
+<li><strong>Step 3</strong>: Listen To Web Worker</li>
+</ul>
 <pre class="hljs"><code>worker.addEventListener(<span class="hljs-string">"message"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
 
     <span class="hljs-comment">// cache the data object</span>
@@ -63,7 +69,9 @@
 
     }
 
-}, <span class="hljs-literal">false</span>);</code></pre><p><strong>Step 4</strong>: Send Data To Web Worker</p>
+}, <span class="hljs-literal">false</span>);</code></pre><ul class="list">
+<li><strong>Step 4</strong>: Send Data To Web Worker</li>
+</ul>
 <pre class="hljs"><code>worker.postMessage({
     <span class="hljs-string">"action"</span>: <span class="hljs-string">"start"</span>, <span class="hljs-comment">// required (tell worker to start &amp; parse)</span>
     <span class="hljs-string">"string"</span>: myString <span class="hljs-comment">// required (string to parse &amp; highlight)</span>

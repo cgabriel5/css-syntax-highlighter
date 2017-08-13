@@ -33,7 +33,7 @@ Take a look at `js/app.js`, `js/source/test.js`, `lib/lib.js`, and `index.html` 
 <a name="usage-general-example"></a>
 **Step By Step** &mdash; General usage.
 
-**Step 1**: Get String To Parse
+* **Step 1**: Get String To Parse
 
 ```js
 // Get string either from the DOM (i.e. text value from textarea, input...etc) 
@@ -42,12 +42,14 @@ Take a look at `js/app.js`, `js/source/test.js`, `lib/lib.js`, and `index.html` 
 var myString = ".red-text { color: red; }";
 ```
 
-**Step 2**: Create Web Worker
+* **Step 2**: Create Web Worker
+
 ```js
 var worker = new Worker("path/to/lib.js");
 ```
 
-**Step 3**: Listen To Web Worker
+* **Step 3**: Listen To Web Worker
+
 ```js
 worker.addEventListener("message", function(e) {
 
@@ -71,7 +73,8 @@ worker.addEventListener("message", function(e) {
 }, false);
 ```
 
-**Step 4**: Send Data To Web Worker
+* **Step 4**: Send Data To Web Worker
+
 ```js
 worker.postMessage({
     "action": "start", // required (tell worker to start & parse)

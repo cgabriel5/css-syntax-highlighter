@@ -487,8 +487,37 @@
                     var mode = flags.mode;
                     // also skip to next iteration if the next character is also a hyphen
                     if (next_char === "-") {
-                        // add to the array
-                        add(char, null);
+                        // check for possible css variable (custom property)
+                        // [https://developer.mozilla.org/en-US/docs/Web/CSS/var]
+                        // [https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables]
+                        // **Note**: Although most examples on the web show that to define a variable 2 hyphens must
+                        // be used, an unlimited amount of hyphens seem to be allowed. For example the following variable
+                        // definitions are seem to work. Even "----: blanchedalmond;"
+                        // :root {
+                        //     --apple: red;
+                        //     --a: green;
+                        //     ----: blanchedalmond;
+                        // }
+                        // body {
+                        //   background: var(----);
+                        // }
+                        // Therefore, the syntax to look for a variable is the following: --[-∞][number|letter|hyphen]+
+                        if (/^\-\-(\-+)?[a-z0-9-]+$/i.test(str_)) {
+                            if (mode === "property") {
+                                // id the mode is set to property then the variable must be getting defined
+                                // syntax color highlight
+                                add(str, "variable-definition");
+                            } else if (mode === "x-property-value") {
+                                // if the mode is set to x-property-value then the variable must be getting used
+                                // syntax color highlight
+                                add(str, "variable-name");
+                            }
+                            // reset the index
+                            i = findex;
+                        } else {
+                            // this covers anything else...
+                            add(char, null);
+                        }
                         // return the index
                         return i;
                     }

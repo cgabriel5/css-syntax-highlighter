@@ -100,6 +100,11 @@ pre {
     background: #FFF;
 }
 
+.lang-css-variable-definition,
+.lang-css-variable-name {
+    color: #413cb4;
+}
+
 .lang-css-x-property-value {
     color: #9A653A;
 }

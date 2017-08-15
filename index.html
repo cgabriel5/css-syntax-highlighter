@@ -22,7 +22,47 @@
                     <div class="paragraph">The CSS highlighter will parse the provided CSS and add syntax highlighting. The example below gives an idea of how the highlighted CSS will look like.</div>
                     <div class="css-example">
                         <pre><code class="lang-css-syntax"></code></pre>
-                        <textarea>/* CSS code from: http://designers.hubspot.com/docs/tools/boilerplate-css */
+                        <textarea>/* CSS code from: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables */
+
+:root {
+  --main-bg-color: brown;
+}
+
+.one {
+  color: white;
+  background-color: var(--main-bg-color);
+  margin: 10px;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+}
+
+.two {
+  color: white;
+  background-color: black;
+  margin: 10px;
+  width: 150px;
+  height: 70px;
+  display: inline-block;
+}
+.three {
+  color: white;
+  background-color: var(--main-bg-color);
+  margin: 10px;
+  width: 75px;
+}
+.four {
+  color: white;
+  background-color: var(--main-bg-color);
+  margin: 10px;
+  width: 100px;
+}
+
+.five {
+  background-color: var(--main-bg-color);
+}
+
+/* CSS code from: http://designers.hubspot.com/docs/tools/boilerplate-css */
 
 
 /* Images */

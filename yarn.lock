@@ -1504,6 +1504,13 @@ gulp-minify-html@^1.0.6:
     minimize "^1.5.0"
     through2 "^0.6.1"
 
+gulp-print@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/gulp-print/-/gulp-print-2.0.1.tgz#1acee58eac8af2d3c4ad3329dbe465758393c414"
+  dependencies:
+    gulp-util "^3.0.6"
+    map-stream "~0.0.6"
+
 gulp-purifycss@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/gulp-purifycss/-/gulp-purifycss-0.2.0.tgz#182c4bade8ec9978a9f813663e6921afc1a350a3"
@@ -1546,7 +1553,7 @@ gulp-uglify@^2.1.2:
     uglify-save-license "^0.4.1"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-util@*, gulp-util@3.0.8, gulp-util@^3.0.0, gulp-util@^3.0.3, gulp-util@^3.0.4, gulp-util@^3.0.5, gulp-util@^3.0.8:
+gulp-util@*, gulp-util@3.0.8, gulp-util@^3.0.0, gulp-util@^3.0.3, gulp-util@^3.0.4, gulp-util@^3.0.5, gulp-util@^3.0.6, gulp-util@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
   dependencies:
@@ -2390,6 +2397,10 @@ map-cache@^0.2.0:
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
+
+map-stream@~0.0.6:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/map-stream/-/map-stream-0.0.7.tgz#8a1f07896d82b10926bd3744a2420009f88974a8"
 
 markdown-stream-utils@~1.5.0:
   version "1.5.0"

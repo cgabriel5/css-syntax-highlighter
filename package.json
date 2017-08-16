@@ -21,6 +21,7 @@
         "gulp-if": "^2.0.2",
         "gulp-jsbeautifier": "^2.1.0",
         "gulp-minify-html": "^1.0.6",
+        "gulp-print": "^2.0.1",
         "gulp-purifycss": "^0.2.0",
         "gulp-rename": "^1.2.2",
         "gulp-replace": "^0.5.4",

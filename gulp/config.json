@@ -8,7 +8,7 @@
         "beautify": {
             "css": {
                 "allowed_file_extensions": ["css", "scss", "sass", "less"],
-                "end_with_newline": false,
+                "end_with_newline": true,
                 "indent_char": " ",
                 "indent_size": 4,
                 "newline_between_rules": true,
@@ -18,7 +18,7 @@
             "html": {
                 "allowed_file_extensions": ["htm", "html", "xhtml", "shtml", "xml", "svg"],
                 "brace_style": "collapse",
-                "end_with_newline": false,
+                "end_with_newline": true,
                 "indent_char": " ",
                 "indent_handlebars": false,
                 "indent_inner_html": false,
@@ -34,7 +34,7 @@
                 "brace_style": "collapse",
                 "break_chained_methods": true,
                 "e4x": false,
-                "end_with_newline": false,
+                "end_with_newline": true,
                 "indent_char": " ",
                 "indent_level": 0,
                 "indent_size": 4,

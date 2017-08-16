@@ -422,15 +422,16 @@ gulp.task("clean-files", function(done) {
         return false;
     };
     // get all files
-    return gulp.src(["**/*.*", "!node_modules/**"], {
+    pump([gulp.src(["**/*.*", "!node_modules/**"], {
             cwd: "./",
             dot: true
-        })
-        .pipe(gulpif(condition, print(function(filepath) {
+        }),
+        gulpif(condition, print(function(filepath) {
             return "file: " + filepath;
-        })))
-        .pipe(gulpif(condition, beautify(beautify_options)))
-        .pipe(gulp.dest("./"))
+        })),
+        gulpif(condition, beautify(beautify_options)),
+        gulp.dest("./"),
+    ], done);
 });
 // finds all the files that contain .min in the name and prints them
 gulp.task("findmin", function(done) {
@@ -451,12 +452,13 @@ gulp.task("findmin", function(done) {
         return false;
     };
     // get all files
-    return gulp.src(["**/*.*", "!node_modules/**"], {
+    pump([gulp.src(["**/*.*", "!node_modules/**"], {
             cwd: "./",
             dot: true
-        })
-        .pipe(gulpif(condition, print(function(filepath) {
+        }),
+        gulpif(condition, print(function(filepath) {
             return "file: " + filepath;
-        })))
-        .pipe(gulp.dest("./"))
+        })),
+        // gulp.dest("./")
+    ], done);
 });

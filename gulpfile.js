@@ -409,17 +409,17 @@ gulp.task("clean-files", function(done) {
         var path = parts.join(".");
         // this array may be populated with files needed to be ignored
         // just add the file's path to the array.
-        var exclude = ["markdown/preview/README.html"];
+        var exclude = [];
         // file ext must be of one of the following types
-        if (-~["html", "js", "css", "json"].indexOf(ext) && !-~exclude.indexOf(filepath.replace(__dirname + "/", ""))) {
-            // check if file is a min
-            var path_parts = path.split("/");
-            var last = path_parts[path_parts.length - 1].toLowerCase();
-            // return true for non minimized files
-            // minimized files should not be cleaned and just be left alone
-            if (!-~last.indexOf(".min")) return true;
-        }
-        return false;
+        if (!-~["html", "js", "css", "json"].indexOf(ext)) return false;
+        // cannot be in the exclude array
+        if (-~exclude.indexOf(filepath.replace(__dirname + "/", ""))) return false;
+        // check if file is a min
+        var path_parts = path.split("/");
+        var last = path_parts[path_parts.length - 1].toLowerCase();
+        // cannot be a minimized file
+        if (-~last.indexOf(".min")) return false;
+        return true;
     };
     // get all files
     pump([gulp.src(["**/*.*", "!node_modules/**"], {
@@ -441,15 +441,14 @@ gulp.task("findmin", function(done) {
         var ext = parts.pop()
             .toLowerCase();
         var path = parts.join(".");
-        if (-~["html", "js", "css", "json"].indexOf(ext)) {
-            // check if file is a min
-            var path_parts = path.split("/");
-            var last = path_parts[path_parts.length - 1].toLowerCase();
-            // if the current file is a minimized files return true
-            // as this is the type of file that is wanted
-            if (-~last.indexOf(".min")) return true;
-        }
-        return false;
+        // file ext must be of one of the following types
+        if (!-~["html", "js", "css", "json"].indexOf(ext)) return false;
+        // check if file is a min
+        var path_parts = path.split("/");
+        var last = path_parts[path_parts.length - 1].toLowerCase();
+        // must be a minimized file
+        if (!-~last.indexOf(".min")) return false;
+        return true;
     };
     // get all files
     pump([gulp.src(["**/*.*", "!node_modules/**"], {

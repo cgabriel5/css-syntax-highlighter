@@ -64,24 +64,23 @@ var bs1 = bs.create("localhost"),
 // and file structure might be different. this can cause some problems with
 // the watch tasks and could perform gulp tasks when not necessarily wanted.
 var branch_name = undefined;
-var verify_branch = function() {
+var diff_branch = function() {
     // names have to match
     return !(branch.sync() === branch_name);
 };
 var exit = function() {
+    // undefined branch_name means gulp command has yet to run just return as
+    // some commands like clean-files can be run alone with having a branch_name set
+    if (!branch_name) return;
     // exit gulp process
-    log(("[warning]")
-        .red + " Branch has switched from " + branch_name.green + " to " + branch.sync()
-        .yellow + ". Restart gulp again.");
-    notify("Gulp process was exited as branch was changed. Restart Gulp again.", true);
+    log(("[error]")
+        .red + " Branch switched from " + branch_name.green + " to " + branch.sync()
+        .yellow + ". Restart gulp.");
+    notify("Restart Gulp again. (branch switch)", true);
     process.exit();
-};
-var pre_check = function() {
-    if (verify_branch()) exit();
 };
 // init HTML files + minify
 gulp.task("html", function(done) {
-    pre_check(); // branch task pre check
     // regexp used for pre and post HTML variable injection
     // get regexp info
     var r = regexp.html;
@@ -97,7 +96,7 @@ gulp.task("html", function(done) {
     pump([gulp.src(paths.tasks.html, {
             cwd: "html/source/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         concat("index.html"),
         replace(new RegExp(r_pre.p, r_pre.f), r_func),
         beautify(beautify_options),
@@ -109,7 +108,6 @@ gulp.task("html", function(done) {
     ], done);
 });
 gulp.task("precssapp-clean-styles", function(done) {
-    pre_check(); // branch task pre check
     // regexp used for custom CSS code modifications
     // get regexp info
     var r = regexp.css;
@@ -120,7 +118,7 @@ gulp.task("precssapp-clean-styles", function(done) {
     pump([gulp.src(["styles.css"], {
             cwd: "css/source/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         // [https://www.mikestreety.co.uk/blog/find-and-remove-vendor-prefixes-in-your-css-using-regex]
         replace(new RegExp(pf.p, pf.f), pf.r),
         replace(new RegExp(lz.p, lz.f), lz.r),
@@ -134,11 +132,10 @@ gulp.task("precssapp-clean-styles", function(done) {
 });
 // build app.css + autoprefix + minify
 gulp.task("cssapp", ["precssapp-clean-styles"], function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src(paths.tasks.cssapp, {
             cwd: "css/source/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         concat("app.css"),
         autoprefixer(autoprefixer_options),
         shorthand(),
@@ -151,11 +148,10 @@ gulp.task("cssapp", ["precssapp-clean-styles"], function(done) {
 });
 // build libs.css + minify + beautify
 gulp.task("csslibs", function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src(paths.tasks.csslibs, {
             cwd: "css/libs/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         concat("libs.css"),
         autoprefixer(autoprefixer_options),
         shorthand(),
@@ -168,7 +164,6 @@ gulp.task("csslibs", function(done) {
 });
 // check for any unused CSS
 gulp.task("purify", function(done) {
-    pre_check(); // branch task pre check
     // run yargs
     args.usage("Usage: $0 --remove [boolean]")
         .option("remove", {
@@ -196,7 +191,7 @@ gulp.task("purify", function(done) {
     // don't run gulp just delete the file.
     if (delete_file) return done();
     pump([gulp.src("./css/source/styles.css"),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         purify(["./js/app.js", "./index.html"], {
             info: true,
             rejected: true
@@ -207,11 +202,10 @@ gulp.task("purify", function(done) {
 });
 // build app.js + minify + beautify
 gulp.task("jsapp", function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src(paths.flavor.jsapp, {
             cwd: "js/source/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         concat("app.js"),
         beautify(beautify_options),
         gulp.dest("js/"),
@@ -222,7 +216,6 @@ gulp.task("jsapp", function(done) {
 });
 // build lib/lib.js + lib/lib.min.js
 gulp.task("jslibsource", function(done) {
-    pre_check(); // branch task pre check
     // check if application is a library
     var is_library = __type__ === "library";
     if (!is_library) return done(); // return on apps of type "webapp"
@@ -234,7 +227,7 @@ gulp.task("jslibsource", function(done) {
     pump([gulp.src(files_array, {
             cwd: "js/source/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         concat("app.js"),
         beautify(beautify_options),
         gulpif(is_library, rename("lib.js")),
@@ -249,11 +242,10 @@ gulp.task("jslibsource", function(done) {
 });
 // build libs.js + minify + beautify
 gulp.task("jslibs", function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src(paths.flavor.jslibs, {
             cwd: "js/libs/"
         }),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         concat("libs.js"),
         beautify(beautify_options),
         gulp.dest("js/"),
@@ -264,36 +256,32 @@ gulp.task("jslibs", function(done) {
 });
 // copy css libraries folder
 gulp.task("csslibsfolder", ["clean-csslibs"], function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src(["css/libs/**"]),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         gulp.dest("dist/css/libs/"),
         bs1.stream()
     ], done);
 });
 // copy js libraries folder
 gulp.task("jslibsfolder", ["clean-jslibs"], function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src(["js/libs/**"]),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         gulp.dest("dist/js/libs/"),
         bs1.stream()
     ], done);
 });
 // copy img/ to dist/img/
 gulp.task("img", function(done) {
-    pre_check(); // branch task pre check
     // deed to copy hidden files/folders?
     // [https://github.com/klaascuvelier/gulp-copy/issues/5]
     pump([gulp.src("img/**/*"),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         gulp.dest("dist/img/"),
         bs1.stream()
     ], done);
 });
 // markdown to html (with github style/layout)
 gulp.task("readme", function(done) {
-    pre_check(); // branch task pre check
     mds.render(mds.resolveArgs({
         input: path.normalize(process.cwd() + "/README.md"),
         output: path.normalize(process.cwd() + "/markdown/preview"),
@@ -303,7 +291,7 @@ gulp.task("readme", function(done) {
         pump([gulp.src("README.html", {
                 cwd: "markdown/preview/"
             }),
-            gulpif(verify_branch, fail(exit)),
+            gulpif(diff_branch, fail(exit)),
             beautify(beautify_options),
             gulp.dest("./markdown/preview/"),
             bs1.stream()
@@ -312,7 +300,6 @@ gulp.task("readme", function(done) {
 });
 // watch changes to files
 gulp.task("watch", function(done) {
-    pre_check(); // branch task pre check
     // start browser-syncs
     bs1.init({
         browser: options.browsers.list,
@@ -365,7 +352,6 @@ gulp.task("watch", function(done) {
 });
 // open index.html in browser
 gulp.task("open", function(done) {
-    pre_check(); // branch task pre check
     // run yargs
     var _args = args.usage("Usage: $0 --file [string] --port [number]")
         .option("file", {
@@ -418,31 +404,27 @@ var opts = {
 };
 // remove the dist/ folder
 gulp.task("clean-dist", ["branch-name"], function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src("dist/", opts),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         clean()
     ], done);
 });
 // remove the css/libs/ folder
 gulp.task("clean-csslibs", function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src("dist/css/libs/", opts),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         clean()
     ], done);
 });
 // remove the js/libs/ folder
 gulp.task("clean-jslibs", function(done) {
-    pre_check(); // branch task pre check
     pump([gulp.src("dist/js/libs/", opts),
-        gulpif(verify_branch, fail(exit)),
+        gulpif(diff_branch, fail(exit)),
         clean()
     ], done);
 });
 // build the dist/ folder
 gulp.task("build", ["clean-dist"], function(done) {
-    pre_check(); // branch task pre check
     var build_order = config.paths.order;
     build_order.push(function() {
         notify("Build complete");
@@ -472,7 +454,6 @@ gulp.task("default", function(done) {
 //
 // run gulp-jsbeautifier on html, js, css, & json files to clean them
 gulp.task("clean-files", function(done) {
-    pre_check(); // branch task pre check
     var condition = function(file) {
         var filepath = file.path;
         var parts = filepath.split(".");
@@ -498,6 +479,7 @@ gulp.task("clean-files", function(done) {
             cwd: "./",
             dot: true
         }),
+        gulpif(diff_branch, fail(exit)),
         gulpif(condition, print(function(filepath) {
             return "file: " + filepath;
         })),
@@ -507,7 +489,6 @@ gulp.task("clean-files", function(done) {
 });
 // finds all the files that contain .min in the name and prints them
 gulp.task("findmin", function(done) {
-    pre_check(); // branch task pre check
     var condition = function(file) {
         var filepath = file.path;
         var parts = filepath.split(".");
@@ -528,9 +509,9 @@ gulp.task("findmin", function(done) {
             cwd: "./",
             dot: true
         }),
+        gulpif(diff_branch, fail(exit)),
         gulpif(condition, print(function(filepath) {
             return "file: " + filepath;
         })),
-        // gulp.dest("./")
     ], done);
 });

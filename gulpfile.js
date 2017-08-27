@@ -65,13 +65,13 @@ var bs1 = bs.create("localhost"),
 // the watch tasks and could perform gulp tasks when not necessarily wanted.
 var branch_name = undefined;
 var diff_branch = function() {
+    // undefined branch_name means gulp command has yet to run just return as
+    // some commands like clean-files can be run alone with having a branch_name set
+    if (!branch_name) return false;
     // names have to match
     return !(branch.sync() === branch_name);
 };
 var exit = function() {
-    // undefined branch_name means gulp command has yet to run just return as
-    // some commands like clean-files can be run alone with having a branch_name set
-    if (!branch_name) return;
     // exit gulp process
     log(("[error]")
         .red + " Branch switched from " + branch_name.green + " to " + branch.sync()

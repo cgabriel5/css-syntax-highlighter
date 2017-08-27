@@ -11,46 +11,50 @@
 </head>
 
 <body>
-    <article class="markdown-body"><h1 id="css-syntax-highlighter">css-syntax-highlighter</h1>
-<p>An experimental CSS syntax highlighter.</p>
-<h5 id="table-of-contents">Table of Contents</h5>
-<ul class="list">
-<li><a href="#project-setup">Project Setup</a></li>
-<li><a href="#demo">Demo</a></li>
-<li><a href="#usage">Usage</a><ul class="list">
-<li><a href="#usage-general-example">Step By Step</a></li>
-</ul>
-</li>
-<li><a href="#issues">Issues</a></li>
-<li><a href="#contributing">Contributing</a></li>
-<li><a href="#todo">TODO</a></li>
-<li><a href="#license">License</a></li>
-</ul>
-<p><a name="project-setup"></a></p>
-<h3 id="project-setup">Project Setup</h3>
-<p>Project uses <a href="https://github.com/cgabriel5/snippets/tree/master/boilerplate/application">this</a> boilerplate. Its <a href="https://github.com/cgabriel5/snippets/blob/master/boilerplate/application/README.md#-read-before-use">README.md</a> contains instructions for <code>Yarn</code> and <code>Gulp</code>.</p>
-<p><a name="demo"></a></p>
-<h3 id="demo">Demo</h3>
-<p>Example of highlighted CSS <a href="https://cgabriel5.github.io/css-syntax-highlighter/">here</a>.</p>
-<p><a name="usage"></a></p>
-<h3 id="usage">Usage</h3>
-<p><strong>Note</strong>: The library, both minimized and unminimized, is located in <code>lib/</code>.</p>
-<p>Take a look at <code>js/app.js</code>, <code>js/source/test.js</code>, <code>lib/lib.js</code>, and <code>index.html</code> to see how the demo is made. Colors can be customized by editing <code>css/source/highlighter.css</code>.</p>
-<p><a name="usage-general-example"></a>
-<strong>Step By Step</strong> &mdash; General usage.</p>
-<ul class="list">
-<li><strong>Step 1</strong>: Get String To Parse</li>
-</ul>
-<pre class="hljs"><code><span class="hljs-comment">// Get string either from the DOM (i.e. text value from textarea, input...etc) </span>
+    <article class="markdown-body">
+        <h1 id="css-syntax-highlighter">css-syntax-highlighter</h1>
+        <p>An experimental CSS syntax highlighter.</p>
+        <h5 id="table-of-contents">Table of Contents</h5>
+        <ul class="list">
+            <li><a href="#project-setup">Project Setup</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#usage">Usage</a>
+                <ul class="list">
+                    <li><a href="#usage-general-example">Step By Step</a></li>
+                </ul>
+            </li>
+            <li><a href="#issues">Issues</a></li>
+            <li><a href="#contributing">Contributing</a></li>
+            <li><a href="#todo">TODO</a></li>
+            <li><a href="#license">License</a></li>
+        </ul>
+        <p><a name="project-setup"></a></p>
+        <h3 id="project-setup">Project Setup</h3>
+        <p>Project uses <a href="https://github.com/cgabriel5/snippets/tree/master/boilerplate/application">this</a> boilerplate. Its <a href="https://github.com/cgabriel5/snippets/blob/master/boilerplate/application/README.md#-read-before-use">README.md</a> contains instructions for <code>Yarn</code> and <code>Gulp</code>.</p>
+        <p><a name="demo"></a></p>
+        <h3 id="demo">Demo</h3>
+        <p>Example of highlighted CSS <a href="https://cgabriel5.github.io/css-syntax-highlighter/">here</a>.</p>
+        <p><a name="usage"></a></p>
+        <h3 id="usage">Usage</h3>
+        <p><strong>Note</strong>: The library, both minimized and unminimized, is located in <code>lib/</code>.</p>
+        <p>Take a look at <code>js/app.js</code>, <code>js/source/test.js</code>, <code>lib/lib.js</code>, and <code>index.html</code> to see how the demo is made. Colors can be customized by editing <code>css/source/highlighter.css</code>.</p>
+        <p><a name="usage-general-example"></a>
+            <strong>Step By Step</strong> &mdash; General usage.</p>
+        <ul class="list">
+            <li><strong>Step 1</strong>: Get String To Parse</li>
+        </ul>
+        <pre class="hljs"><code><span class="hljs-comment">// Get string either from the DOM (i.e. text value from textarea, input...etc) </span>
 <span class="hljs-comment">// or from server via an Ajax request.</span>
 
-<span class="hljs-keyword">var</span> myString = <span class="hljs-string">".red-text { color: red; }"</span>;</code></pre><ul class="list">
-<li><strong>Step 2</strong>: Create Web Worker</li>
-</ul>
-<pre class="hljs"><code><span class="hljs-keyword">var</span> worker = <span class="hljs-keyword">new</span> Worker(<span class="hljs-string">"path/to/lib.js"</span>);</code></pre><ul class="list">
-<li><strong>Step 3</strong>: Listen To Web Worker</li>
-</ul>
-<pre class="hljs"><code>worker.addEventListener(<span class="hljs-string">"message"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
+<span class="hljs-keyword">var</span> myString = <span class="hljs-string">".red-text { color: red; }"</span>;</code></pre>
+        <ul class="list">
+            <li><strong>Step 2</strong>: Create Web Worker</li>
+        </ul>
+        <pre class="hljs"><code><span class="hljs-keyword">var</span> worker = <span class="hljs-keyword">new</span> Worker(<span class="hljs-string">"path/to/lib.js"</span>);</code></pre>
+        <ul class="list">
+            <li><strong>Step 3</strong>: Listen To Web Worker</li>
+        </ul>
+        <pre class="hljs"><code>worker.addEventListener(<span class="hljs-string">"message"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
 
     <span class="hljs-comment">// cache the data object</span>
     <span class="hljs-keyword">var</span> message = e.data;
@@ -69,29 +73,31 @@
 
     }
 
-}, <span class="hljs-literal">false</span>);</code></pre><ul class="list">
-<li><strong>Step 4</strong>: Send Data To Web Worker</li>
-</ul>
-<pre class="hljs"><code>worker.postMessage({
+}, <span class="hljs-literal">false</span>);</code></pre>
+        <ul class="list">
+            <li><strong>Step 4</strong>: Send Data To Web Worker</li>
+        </ul>
+        <pre class="hljs"><code>worker.postMessage({
     <span class="hljs-string">"action"</span>: <span class="hljs-string">"start"</span>, <span class="hljs-comment">// required (tell worker to start &amp; parse)</span>
     <span class="hljs-string">"string"</span>: myString <span class="hljs-comment">// required (string to parse &amp; highlight)</span>
-});</code></pre><p><a name="issues"></a></p>
-<h3 id="issues">Issues</h3>
-<ul class="list">
-<li>Very longs strings can take time to parse (strings &gt; 300,000 characters will fail in Google Chrome). </li>
-</ul>
-<p><a name="contributing"></a></p>
-<h3 id="contributing">Contributing</h3>
-<p>Contributions are welcome! Found a bug, feel like documentation is lacking/confusing and needs an update, have performance/feature suggestions or simply found a typo? Let me know! :)</p>
-<p>See how to contribute <a href="https://github.com/cgabriel5/css-syntax-highlighter/blob/master/CONTRIBUTING.md">here</a>.</p>
-<p><a name="todo"></a></p>
-<h3 id="todo">TODO</h3>
-<ul class="list">
-<li>[ ] Re-write parser for better performance.</li>
-</ul>
-<p><a name="license"></a></p>
-<h3 id="license">License</h3>
-<p>This project uses the <a href="https://github.com/cgabriel5/css-syntax-highlighter/blob/master/LICENSE.txt">MIT License</a>.</p>
+});</code></pre>
+        <p><a name="issues"></a></p>
+        <h3 id="issues">Issues</h3>
+        <ul class="list">
+            <li>Very longs strings can take time to parse (strings &gt; 300,000 characters will fail in Google Chrome). </li>
+        </ul>
+        <p><a name="contributing"></a></p>
+        <h3 id="contributing">Contributing</h3>
+        <p>Contributions are welcome! Found a bug, feel like documentation is lacking/confusing and needs an update, have performance/feature suggestions or simply found a typo? Let me know! :)</p>
+        <p>See how to contribute <a href="https://github.com/cgabriel5/css-syntax-highlighter/blob/master/CONTRIBUTING.md">here</a>.</p>
+        <p><a name="todo"></a></p>
+        <h3 id="todo">TODO</h3>
+        <ul class="list">
+            <li>[ ] Re-write parser for better performance.</li>
+        </ul>
+        <p><a name="license"></a></p>
+        <h3 id="license">License</h3>
+        <p>This project uses the <a href="https://github.com/cgabriel5/css-syntax-highlighter/blob/master/LICENSE.txt">MIT License</a>.</p>
     </article>
 </body>
 

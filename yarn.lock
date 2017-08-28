@@ -29,6 +29,10 @@ acorn@^3.0.4, acorn@^3.1.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
+after-all-results@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/after-all-results/-/after-all-results-2.0.0.tgz#6ac2fc202b500f88da8f4f5530cfa100f4c6a2d0"
+
 after@0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.1.tgz#ab5d4fb883f596816d3515f8f791c0af486dd627"
@@ -290,6 +294,10 @@ browser-sync-client@2.5.0:
   dependencies:
     etag "^1.7.0"
     fresh "^0.3.0"
+
+browser-sync-close-hook@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/browser-sync-close-hook/-/browser-sync-close-hook-1.0.5.tgz#5e0b2858de66362154733afd5627382797c04f2f"
 
 browser-sync-ui@0.6.3:
   version "0.6.3"
@@ -1299,6 +1307,12 @@ getpass@^0.1.1:
 git-branch@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/git-branch/-/git-branch-1.0.0.tgz#64cc7dd75da2d81a9d4679087c1f8b56e6bd2d3d"
+
+git-state@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/git-state/-/git-state-4.0.0.tgz#c6f55127e81a2d9feb405a6ad4f76f97fbb68104"
+  dependencies:
+    after-all-results "^2.0.0"
 
 glob-base@^0.3.0:
   version "0.3.0"
@@ -2636,6 +2650,10 @@ next-tick@1:
 next-tick@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-0.2.2.tgz#75da4a927ee5887e39065880065b7336413b310d"
+
+node-cleanup@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/node-cleanup/-/node-cleanup-2.1.2.tgz#7ac19abd297e09a7f72a71545d951b517e4dde2c"
 
 node-notifier@^5.1.2:
   version "5.1.2"

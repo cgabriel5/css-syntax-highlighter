@@ -19,10 +19,12 @@ var beautify = require("gulp-jsbeautifier");
 // -------------------------------------
 var del = require("del");
 var bs = require("browser-sync");
+var bs_autoclose = require("browser-sync-close-hook");
+var cleanup = require("node-cleanup");
+var git = require("git-state");
 var find_free_port = require("find-free-port");
 var gulpif = require("gulp-if");
 var fail = require("gulp-fail");
-var branch = require("git-branch");
 var print = require("gulp-print");
 var mds = require("markdown-styles");
 var open = require("opn");
@@ -38,6 +40,8 @@ var beautify_options = options.beautify;
 var autoprefixer_options = options.autoprefixer;
 var regexp = config.regexp;
 var __type__ = config.__type__;
+var __path__ = __dirname;
+var branch_name = undefined;
 // -------------------------------------
 var utils = require("./gulp/utils.js");
 var log = utils.log;
@@ -59,26 +63,6 @@ var bs1 = bs.create("localhost"),
             ui: null
         }
     };
-// branch name checks are done to check whether the branch was changed after
-// the gulp command was used. this is done as when switching branches files
-// and file structure might be different. this can cause some problems with
-// the watch tasks and could perform gulp tasks when not necessarily wanted.
-var branch_name = undefined;
-var diff_branch = function() {
-    // undefined branch_name means gulp command has yet to run just return as
-    // some commands like clean-files can be run alone with having a branch_name set
-    if (!branch_name) return false;
-    // names have to match
-    return !(branch.sync() === branch_name);
-};
-var exit = function() {
-    // exit gulp process
-    log(("[error]")
-        .red + " Branch switched from " + branch_name.green + " to " + branch.sync()
-        .yellow + ". Restart gulp.");
-    notify("Restart Gulp again. (branch switch)", true);
-    process.exit();
-};
 // init HTML files + minify
 gulp.task("html", function(done) {
     // regexp used for pre and post HTML variable injection
@@ -96,7 +80,6 @@ gulp.task("html", function(done) {
     pump([gulp.src(paths.tasks.html, {
             cwd: "html/source/"
         }),
-        gulpif(diff_branch, fail(exit)),
         concat("index.html"),
         replace(new RegExp(r_pre.p, r_pre.f), r_func),
         beautify(beautify_options),
@@ -118,7 +101,6 @@ gulp.task("precssapp-clean-styles", function(done) {
     pump([gulp.src(["styles.css"], {
             cwd: "css/source/"
         }),
-        gulpif(diff_branch, fail(exit)),
         // [https://www.mikestreety.co.uk/blog/find-and-remove-vendor-prefixes-in-your-css-using-regex]
         replace(new RegExp(pf.p, pf.f), pf.r),
         replace(new RegExp(lz.p, lz.f), lz.r),
@@ -135,7 +117,6 @@ gulp.task("cssapp", ["precssapp-clean-styles"], function(done) {
     pump([gulp.src(paths.tasks.cssapp, {
             cwd: "css/source/"
         }),
-        gulpif(diff_branch, fail(exit)),
         concat("app.css"),
         autoprefixer(autoprefixer_options),
         shorthand(),
@@ -151,7 +132,6 @@ gulp.task("csslibs", function(done) {
     pump([gulp.src(paths.tasks.csslibs, {
             cwd: "css/libs/"
         }),
-        gulpif(diff_branch, fail(exit)),
         concat("libs.css"),
         autoprefixer(autoprefixer_options),
         shorthand(),
@@ -191,7 +171,6 @@ gulp.task("purify", function(done) {
     // don't run gulp just delete the file.
     if (delete_file) return done();
     pump([gulp.src("./css/source/styles.css"),
-        gulpif(diff_branch, fail(exit)),
         purify(["./js/app.js", "./index.html"], {
             info: true,
             rejected: true
@@ -205,7 +184,6 @@ gulp.task("jsapp", function(done) {
     pump([gulp.src(paths.flavor.jsapp, {
             cwd: "js/source/"
         }),
-        gulpif(diff_branch, fail(exit)),
         concat("app.js"),
         beautify(beautify_options),
         gulp.dest("js/"),
@@ -227,7 +205,6 @@ gulp.task("jslibsource", function(done) {
     pump([gulp.src(files_array, {
             cwd: "js/source/"
         }),
-        gulpif(diff_branch, fail(exit)),
         concat("app.js"),
         beautify(beautify_options),
         gulpif(is_library, rename("lib.js")),
@@ -245,7 +222,6 @@ gulp.task("jslibs", function(done) {
     pump([gulp.src(paths.flavor.jslibs, {
             cwd: "js/libs/"
         }),
-        gulpif(diff_branch, fail(exit)),
         concat("libs.js"),
         beautify(beautify_options),
         gulp.dest("js/"),
@@ -257,7 +233,6 @@ gulp.task("jslibs", function(done) {
 // copy css libraries folder
 gulp.task("csslibsfolder", ["clean-csslibs"], function(done) {
     pump([gulp.src(["css/libs/**"]),
-        gulpif(diff_branch, fail(exit)),
         gulp.dest("dist/css/libs/"),
         bs1.stream()
     ], done);
@@ -265,7 +240,6 @@ gulp.task("csslibsfolder", ["clean-csslibs"], function(done) {
 // copy js libraries folder
 gulp.task("jslibsfolder", ["clean-jslibs"], function(done) {
     pump([gulp.src(["js/libs/**"]),
-        gulpif(diff_branch, fail(exit)),
         gulp.dest("dist/js/libs/"),
         bs1.stream()
     ], done);
@@ -275,7 +249,6 @@ gulp.task("img", function(done) {
     // deed to copy hidden files/folders?
     // [https://github.com/klaascuvelier/gulp-copy/issues/5]
     pump([gulp.src("img/**/*"),
-        gulpif(diff_branch, fail(exit)),
         gulp.dest("dist/img/"),
         bs1.stream()
     ], done);
@@ -291,7 +264,6 @@ gulp.task("readme", function(done) {
         pump([gulp.src("README.html", {
                 cwd: "markdown/preview/"
             }),
-            gulpif(diff_branch, fail(exit)),
             beautify(beautify_options),
             gulp.dest("./markdown/preview/"),
             bs1.stream()
@@ -300,6 +272,20 @@ gulp.task("readme", function(done) {
 });
 // watch changes to files
 gulp.task("watch", function(done) {
+    // add auto tab closing capability to browser-sync. this will
+    // auto close the used bs tabs when gulp closes.
+    bs1.use({
+        plugin() {},
+        hooks: {
+            "client:js": bs_autoclose
+        },
+    });
+    bs2.use({
+        plugin() {},
+        hooks: {
+            "client:js": bs_autoclose
+        },
+    });
     // start browser-syncs
     bs1.init({
         browser: options.browsers.list,
@@ -349,6 +335,7 @@ gulp.task("watch", function(done) {
             bs2.reload();
         });
     });
+    done();
 });
 // open index.html in browser
 gulp.task("open", function(done) {
@@ -388,13 +375,60 @@ gulp.task("open", function(done) {
             done();
         });
 });
-// set the name if the current branch name
-gulp.task("branch-name", function(done) {
-    branch(function(err, name) {
+// update the status of gulp to active
+gulp.task("status", function(done) {
+    var path = "./gulp/.__status__";
+    fs.readFile(path, "utf8", function(err, data) {
         if (err) throw err;
-        // record branch name
-        branch_name = name;
-        done();
+        fs.writeFile(path, "✔", "utf-8", function(err) {
+            if (err) throw err;
+            done();
+        });
+    });
+});
+// watch for branch changes:
+// branch name checks are done to check whether the branch was changed after
+// the gulp command was used. this is done as when switching branches files
+// and file structure might be different. this can cause some problems with
+// the watch tasks and could perform gulp tasks when not necessarily wanted.
+// to resume gulp simply restart with the gulp command.
+gulp.task("git-branch", ["status"], function(done) {
+    git.isGit(__path__, function(exists) {
+        // if no .git exists simply ignore and return done
+        if (!exists) return done();
+        git.check(__path__, function(err, result) {
+            if (err) throw err;
+            // record branch name
+            branch_name = result.branch;
+            log(("(pid:" + process.pid + ")")
+                .yellow + " Gulp monitoring " + branch_name.green + " branch.");
+            // set the gulp watcher as .git exists
+            gulp.watch([".git/HEAD"], {
+                cwd: "./",
+                dot: true
+            }, function() {
+                var brn_current = git.checkSync(__path__)
+                    .branch;
+                if (brn_current !== branch_name) {
+                    // message + exit
+                    log(("[warning]")
+                        .yellow + " Gulp stopped due to branch switch. (" + branch_name.green + " => " + brn_current.yellow + ")");
+                    log(("[warning]")
+                        .yellow + " Restart Gulp to monitor " + brn_current.yellow + " branch.");
+                    process.exit();
+                }
+            });
+            // when gulp is closed do a quick cleanup
+            cleanup(function(exit_code, signal) {
+                // clear the status of gulp to off
+                fs.writeFileSync("./gulp/.__status__", "");
+                branch_name = undefined;
+                if (bs1) bs1.exit();
+                if (bs2) bs2.exit();
+                if (process) process.exit();
+            });
+            done();
+        });
     });
 });
 // remove options
@@ -403,23 +437,20 @@ var opts = {
     cwd: "./"
 };
 // remove the dist/ folder
-gulp.task("clean-dist", ["branch-name"], function(done) {
+gulp.task("clean-dist", ["git-branch"], function(done) {
     pump([gulp.src("dist/", opts),
-        gulpif(diff_branch, fail(exit)),
         clean()
     ], done);
 });
 // remove the css/libs/ folder
 gulp.task("clean-csslibs", function(done) {
     pump([gulp.src("dist/css/libs/", opts),
-        gulpif(diff_branch, fail(exit)),
         clean()
     ], done);
 });
 // remove the js/libs/ folder
 gulp.task("clean-jslibs", function(done) {
     pump([gulp.src("dist/js/libs/", opts),
-        gulpif(diff_branch, fail(exit)),
         clean()
     ], done);
 });
@@ -454,38 +485,49 @@ gulp.task("default", function(done) {
 //
 // run gulp-jsbeautifier on html, js, css, & json files to clean them
 gulp.task("clean-files", function(done) {
-    var condition = function(file) {
-        var filepath = file.path;
-        var parts = filepath.split(".");
-        var ext = parts.pop()
-            .toLowerCase();
-        var path = parts.join(".");
-        // this array may be populated with files needed to be ignored
-        // just add the file's path to the array.
-        var exclude = ["index.html"];
-        // file ext must be of one of the following types
-        if (!-~["html", "js", "css", "json"].indexOf(ext)) return false;
-        // cannot be in the exclude array
-        if (-~exclude.indexOf(filepath.replace(__dirname + "/", ""))) return false;
-        // check if file is a min
-        var path_parts = path.split("/");
-        var last = path_parts[path_parts.length - 1].toLowerCase();
-        // cannot be a minimized file
-        if (-~last.indexOf(".min")) return false;
-        return true;
-    };
-    // get all files
-    pump([gulp.src(["**/*.*", "!node_modules/**"], {
-            cwd: "./",
-            dot: true
-        }),
-        gulpif(diff_branch, fail(exit)),
-        gulpif(condition, print(function(filepath) {
-            return "file: " + filepath;
-        })),
-        gulpif(condition, beautify(beautify_options)),
-        gulp.dest("./"),
-    ], done);
+    // this task can only run when gulp is not running as gulps watchers
+    // can run too many times as many files are potentially being beautified
+    var path = "./gulp/.__status__";
+    fs.readFile(path, "utf8", function(err, data) {
+        if (err) throw err;
+        // if file is empty gulp is not active
+        if (data.length) {
+            log(("[warning]")
+                .yellow + " Files cannot be cleaned while Gulp is running. Close Gulp then try again.");
+            return done();
+        }
+        var condition = function(file) {
+            var filepath = file.path;
+            var parts = filepath.split(".");
+            var ext = parts.pop()
+                .toLowerCase();
+            var path = parts.join(".");
+            // this array may be populated with files needed to be ignored
+            // just add the file's path to the array.
+            var exclude = ["index.html"];
+            // file ext must be of one of the following types
+            if (!-~["html", "js", "css", "json"].indexOf(ext)) return false;
+            // cannot be in the exclude array
+            if (-~exclude.indexOf(filepath.replace(__path__ + "/", ""))) return false;
+            // check if file is a min
+            var path_parts = path.split("/");
+            var last = path_parts[path_parts.length - 1].toLowerCase();
+            // cannot be a minimized file
+            if (-~last.indexOf(".min")) return false;
+            return true;
+        };
+        // get all files
+        pump([gulp.src(["**/*.*", "!node_modules/**"], {
+                cwd: "./",
+                dot: true
+            }),
+            gulpif(condition, print(function(filepath) {
+                return "file: " + filepath;
+            })),
+            gulpif(condition, beautify(beautify_options)),
+            gulp.dest("./"),
+        ], done);
+    });
 });
 // finds all the files that contain .min in the name and prints them
 gulp.task("findmin", function(done) {
@@ -509,7 +551,6 @@ gulp.task("findmin", function(done) {
             cwd: "./",
             dot: true
         }),
-        gulpif(diff_branch, fail(exit)),
         gulpif(condition, print(function(filepath) {
             return "file: " + filepath;
         })),

@@ -420,3 +420,4 @@ $RECYCLE.BIN/
 # Custom
 build/
 dist/
+gulp/.__status__.*

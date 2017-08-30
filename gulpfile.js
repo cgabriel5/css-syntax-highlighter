@@ -376,10 +376,9 @@ gulp.task("open", function(done) {
 });
 // update the status of gulp to active
 gulp.task("status", function(done) {
-    var path = "./gulp/.__status__";
-    fs.readFile(path, "utf8", function(err, data) {
+    fs.readFile(paths.gulp.status, "utf8", function(err, data) {
         if (err) throw err;
-        fs.writeFile(path, "✔", "utf-8", function(err) {
+        fs.writeFile(paths.gulp.status, "✔", "utf-8", function(err) {
             if (err) throw err;
             done();
         });
@@ -420,7 +419,7 @@ gulp.task("git-branch", ["status"], function(done) {
             // when gulp is closed do a quick cleanup
             cleanup(function(exit_code, signal) {
                 // clear the status of gulp to off
-                fs.writeFileSync("./gulp/.__status__", "");
+                fs.writeFileSync(paths.gulp.status, "");
                 branch_name = undefined;
                 if (bs1) bs1.exit();
                 if (bs2) bs2.exit();
@@ -486,8 +485,7 @@ gulp.task("default", function(done) {
 gulp.task("clean-files", function(done) {
     // this task can only run when gulp is not running as gulps watchers
     // can run too many times as many files are potentially being beautified
-    var path = "./gulp/.__status__";
-    fs.readFile(path, "utf8", function(err, data) {
+    fs.readFile(paths.gulp.status, "utf8", function(err, data) {
         if (err) throw err;
         // if file is empty gulp is not active
         if (data.length) {

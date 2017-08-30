@@ -72,6 +72,9 @@
             "html": ["i*.html", "head/*.html", "body/*.html"],
             "img": ["img/**/*.{jpg,png,gif}"],
             "js": ["libs/**/*.js", "source/*.js", "source/modules/*.js"]
+        },
+        "gulp": {
+            "status": "./gulp/.gulpstatus"
         }
     },
     "regexp": {

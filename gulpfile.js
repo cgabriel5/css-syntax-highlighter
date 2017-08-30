@@ -24,7 +24,6 @@ var cleanup = require("node-cleanup");
 var git = require("git-state");
 var find_free_port = require("find-free-port");
 var gulpif = require("gulp-if");
-var fail = require("gulp-fail");
 var print = require("gulp-print");
 var mds = require("markdown-styles");
 var open = require("opn");

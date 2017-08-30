@@ -53,7 +53,7 @@
             }
         },
         "browsers": {
-            "list": ["google-chrome"]
+            "list": ["google-chrome", "google chrome", "chrome", "firefox"]
         }
     },
     "paths": {

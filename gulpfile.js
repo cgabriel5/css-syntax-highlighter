@@ -285,7 +285,7 @@ gulp.task("watch", function(done) {
             "client:js": bs_autoclose
         },
     });
-    // start browser-syncs
+    // start browser-sync
     bs1.init({
         browser: options.browsers.list,
         proxy: uri(),
@@ -294,47 +294,51 @@ gulp.task("watch", function(done) {
             port: ports.bs1.ui
         },
         notify: false
-    });
-    bs2.init({
-        browser: options.browsers.list,
-        proxy: uri("markdown/preview/README.html"),
-        port: ports.bs2.app,
-        ui: {
-            port: ports.bs2.ui
-        },
-        notify: false,
-        open: false
-    });
-    // get the watch path
-    var path = paths.watch;
-    gulp.watch(path.html, {
-        cwd: "html/source/"
     }, function() {
-        return sequence("html");
-    });
-    gulp.watch(path.css, {
-        cwd: "css/"
-    }, function() {
-        return sequence("cssapp", "csslibs", "csslibsfolder");
-    });
-    gulp.watch(path.js, {
-        cwd: "js/"
-    }, function() {
-        return sequence("jsapp", "jslibsource", "jslibs", "jslibsfolder");
-    });
-    gulp.watch(path.img, {
-        cwd: "./"
-    }, function() {
-        return sequence("img");
-    });
-    gulp.watch(["README.md"], {
-        cwd: "./"
-    }, function() {
-        return sequence("readme", function() {
-            bs2.reload();
+        // start readme bs server
+        bs2.init({
+            browser: options.browsers.list,
+            proxy: uri("markdown/preview/README.html"),
+            port: ports.bs2.app,
+            ui: {
+                port: ports.bs2.ui
+            },
+            notify: false,
+            open: false
+        }, function() {
+            // the gulp watchers
+            // get the watch path
+            var path = paths.watch;
+            gulp.watch(path.html, {
+                cwd: "html/source/"
+            }, function() {
+                return sequence("html");
+            });
+            gulp.watch(path.css, {
+                cwd: "css/"
+            }, function() {
+                return sequence("cssapp", "csslibs", "csslibsfolder");
+            });
+            gulp.watch(path.js, {
+                cwd: "js/"
+            }, function() {
+                return sequence("jsapp", "jslibsource", "jslibs", "jslibsfolder");
+            });
+            gulp.watch(path.img, {
+                cwd: "./"
+            }, function() {
+                return sequence("img");
+            });
+            gulp.watch(["README.md"], {
+                cwd: "./"
+            }, function() {
+                return sequence("readme", function() {
+                    bs2.reload();
+                });
+            });
+            done();
         });
     });
-    done();
 });
 // open index.html in browser
 gulp.task("open", function(done) {

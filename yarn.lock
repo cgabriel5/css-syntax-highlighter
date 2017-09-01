@@ -1102,6 +1102,10 @@ fancy-log@^1.1.0:
     chalk "^1.1.1"
     time-stamp "^1.0.0"
 
+file-exists@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/file-exists/-/file-exists-4.0.0.tgz#104eacf25d3fd6b3e462951ae923533195ffb52b"
+
 filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"

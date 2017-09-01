@@ -18,7 +18,8 @@ var beautify = require("gulp-jsbeautifier");
 // var beautify = require("gulp-jsbeautifier");
 // -------------------------------------
 var del = require("del");
-var bs = require("browser-sync");
+var fe = require("file-exists");
+var browser_sync = require("browser-sync");
 var bs_autoclose = require("browser-sync-close-hook");
 var cleanup = require("node-cleanup");
 var git = require("git-state");
@@ -49,19 +50,7 @@ var notify = utils.notify;
 var gulp = utils.gulp;
 var uri = utils.uri;
 // -------------------------------------
-// create the browser-sync servers
-var bs1 = bs.create("localhost"),
-    bs2 = bs.create("readme"),
-    ports = {
-        bs1: {
-            app: null,
-            ui: null
-        },
-        bs2: {
-            app: null,
-            ui: null
-        }
-    };
+var bs = browser_sync.create("localhost"); // browser-sync server
 // init HTML files + minify
 gulp.task("html", function(done) {
     // regexp used for pre and post HTML variable injection
@@ -73,7 +62,7 @@ gulp.task("html", function(done) {
         var filename = "html/source/regexp/" + match.replace(/\$\:(pre|post)\{|\}$/g, "") + ".text";
         // check that file exists before opening/reading...
         // return undefined when file does not exist...else return its contents
-        return (!fs.existsSync(filename)) ? "undefined" : fs.readFileSync(filename)
+        return (!fe.sync(filename)) ? "undefined" : fs.readFileSync(filename)
             .toString();
     };
     pump([gulp.src(paths.tasks.html, {
@@ -86,7 +75,7 @@ gulp.task("html", function(done) {
         gulp.dest("./"),
         minify_html(),
         gulp.dest("dist/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 gulp.task("precssapp-clean-styles", function(done) {
@@ -108,7 +97,7 @@ gulp.task("precssapp-clean-styles", function(done) {
             return match.toLowerCase();
         }),
         gulp.dest("css/source/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // build app.css + autoprefix + minify
@@ -123,7 +112,7 @@ gulp.task("cssapp", ["precssapp-clean-styles"], function(done) {
         gulp.dest("css/"),
         clean_css(),
         gulp.dest("dist/css/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // build libs.css + minify + beautify
@@ -138,7 +127,7 @@ gulp.task("csslibs", function(done) {
         gulp.dest("css/"),
         clean_css(),
         gulp.dest("dist/css/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // check for any unused CSS
@@ -160,7 +149,7 @@ gulp.task("purify", function(done) {
         .help("?")
         .alias("?", "help")
         .example("$0 --remove", "Deletes `pure.css` and removes unused CSS.")
-        .example("$0 --delete", "Deletes `pure.css`")
+        .example("$0 --delete", "Deletes `pure.css`.")
         .argv;
     // get the command line arguments from yargs
     var remove = cli.r || cli.remove;
@@ -188,7 +177,7 @@ gulp.task("jsapp", function(done) {
         gulp.dest("js/"),
         uglify(),
         gulp.dest("dist/js/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // build lib/lib.js + lib/lib.min.js
@@ -213,7 +202,7 @@ gulp.task("jslibsource", function(done) {
         gulpif(is_library, rename("lib.min.js")),
         gulpif(is_library, gulp.dest("lib/")),
         gulpif(is_library, gulp.dest("dist/lib/")), // <-- also add to dist/ directory
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // build libs.js + minify + beautify
@@ -226,21 +215,21 @@ gulp.task("jslibs", function(done) {
         gulp.dest("js/"),
         uglify(),
         gulp.dest("dist/js/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // copy css libraries folder
 gulp.task("csslibsfolder", ["clean-csslibs"], function(done) {
     pump([gulp.src(["css/libs/**"]),
         gulp.dest("dist/css/libs/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // copy js libraries folder
 gulp.task("jslibsfolder", ["clean-jslibs"], function(done) {
     pump([gulp.src(["js/libs/**"]),
         gulp.dest("dist/js/libs/"),
-        bs1.stream()
+        bs.stream()
     ], done);
 });
 // copy img/ to dist/img/
@@ -249,8 +238,105 @@ gulp.task("img", function(done) {
     // [https://github.com/klaascuvelier/gulp-copy/issues/5]
     pump([gulp.src("img/**/*"),
         gulp.dest("dist/img/"),
-        bs1.stream()
+        bs.stream()
     ], done);
+});
+// list the used ports for browser-sync
+gulp.task("ports", function(done) {
+    // get the ports from .gulpports
+    fs.open(paths.gulp.ports, "r", function(err, fd) {
+        if (err) throw err;
+        fs.readFile(paths.gulp.ports, "utf8", function(err, data) {
+            if (err) throw err;
+            // if file is empty
+            if (!data.length) {
+                log(("[warning]")
+                    .yellow + " No ports are in use.");
+                return done();
+            }
+            // file is not empty...extract ports
+            var ports = data.split(" ");
+            log(("(local)")
+                .green, ports[0]);
+            log(("(ui)")
+                .green, ports[1]);
+            done();
+        });
+    });
+});
+// markdown to html (with github style/layout)
+gulp.task("tohtml", function(done) {
+    // run yargs
+    var _args = args.usage("Usage: $0 --input [string] --output [string] --name [string]")
+        .option("input", {
+            alias: "i",
+            demandOption: true,
+            describe: "Path of file to convert (Markdown => HTML).",
+            type: "string"
+        })
+        .option("output", {
+            alias: "o",
+            demandOption: true,
+            describe: "Path where converted HTML file should be placed.",
+            type: "string"
+        })
+        .option("name", {
+            alias: "n",
+            demandOption: false,
+            describe: "New name of converted file.",
+            type: "string"
+        })
+        .help("?")
+        .alias("?", "help")
+        .example("$0 --input README.md --output /markdown/preview --name Converted.html", "Convert `README.md` to `Converted.html` and place in /markdown/preview.")
+        .argv;
+    // get provided parameters
+    var input = _args.i || _args.input;
+    var output = _args.o || _args.output;
+    var new_name = _args.n || _args.name;
+    // file has to exist
+    fe(input, function(err, exists) {
+        if (!exists) {
+            log(("[warning]")
+                .yellow + " File does not exist.");
+            return done();
+        }
+        // continue...file exists
+        // check for an .md file
+        var input_ext = path.extname(input);
+        // file must be an .md file
+        if (input_ext.toLowerCase() !== ".md") {
+            log(("[warning]")
+                .yellow + " Input file must be an .md file.");
+            return done();
+        }
+        // get the input file name
+        var input_filename = path.basename(input, input_ext);
+        // get the new file name, default to input_filename when nothing is given
+        new_name = (!new_name) ? undefined : path.basename(new_name, path.extname(new_name));
+        // render Markdown to HTML
+        var cwd = process.cwd();
+        mds.render(mds.resolveArgs({
+            input: path.join(cwd, input),
+            output: path.join(cwd, output),
+            layout: path.join(cwd, "/markdown/source")
+        }), function() {
+            var new_file_path = output + "/" + input_filename + ".html";
+            // cleanup README.html
+            pump([gulp.src(new_file_path, {
+                    cwd: "./"
+                }),
+                beautify(beautify_options),
+                // if a new name was provided, rename the file
+                gulpif(new_name !== undefined, rename(new_name + ".html")),
+                gulp.dest(output)
+            ], function() {
+                // if a new name was provided delete the file with the old input file
+                if (new_name) del([new_file_path]);
+                done();
+            });
+        });
+    });
 });
 // markdown to html (with github style/layout)
 gulp.task("readme", function(done) {
@@ -265,7 +351,7 @@ gulp.task("readme", function(done) {
             }),
             beautify(beautify_options),
             gulp.dest("./markdown/preview/"),
-            bs1.stream()
+            bs.stream()
         ], done);
     });
 });
@@ -273,71 +359,54 @@ gulp.task("readme", function(done) {
 gulp.task("watch", function(done) {
     // add auto tab closing capability to browser-sync. this will
     // auto close the used bs tabs when gulp closes.
-    bs1.use({
-        plugin() {},
-        hooks: {
-            "client:js": bs_autoclose
-        },
-    });
-    bs2.use({
+    bs.use({
         plugin() {},
         hooks: {
             "client:js": bs_autoclose
         },
     });
     // start browser-sync
-    bs1.init({
+    bs.init({
         browser: options.browsers.list,
-        proxy: uri(),
-        port: ports.bs1.app,
+        proxy: uri(), // uri("markdown/preview/README.html"),
+        port: bs.__ports__[0],
         ui: {
-            port: ports.bs1.ui
+            port: bs.__ports__[1]
         },
-        notify: false
+        notify: false,
+        open: true
     }, function() {
-        // start readme bs server
-        bs2.init({
-            browser: options.browsers.list,
-            proxy: uri("markdown/preview/README.html"),
-            port: ports.bs2.app,
-            ui: {
-                port: ports.bs2.ui
-            },
-            notify: false,
-            open: false
+        // the gulp watchers
+        // get the watch path
+        var path = paths.watch;
+        gulp.watch(path.html, {
+            cwd: "html/source/"
         }, function() {
-            // the gulp watchers
-            // get the watch path
-            var path = paths.watch;
-            gulp.watch(path.html, {
-                cwd: "html/source/"
-            }, function() {
-                return sequence("html");
-            });
-            gulp.watch(path.css, {
-                cwd: "css/"
-            }, function() {
-                return sequence("cssapp", "csslibs", "csslibsfolder");
-            });
-            gulp.watch(path.js, {
-                cwd: "js/"
-            }, function() {
-                return sequence("jsapp", "jslibsource", "jslibs", "jslibsfolder");
-            });
-            gulp.watch(path.img, {
-                cwd: "./"
-            }, function() {
-                return sequence("img");
-            });
-            gulp.watch(["README.md"], {
-                cwd: "./"
-            }, function() {
-                return sequence("readme", function() {
-                    bs2.reload();
-                });
-            });
-            done();
+            return sequence("html");
         });
+        gulp.watch(path.css, {
+            cwd: "css/"
+        }, function() {
+            return sequence("cssapp", "csslibs", "csslibsfolder");
+        });
+        gulp.watch(path.js, {
+            cwd: "js/"
+        }, function() {
+            return sequence("jsapp", "jslibsource", "jslibs", "jslibsfolder");
+        });
+        gulp.watch(path.img, {
+            cwd: "./"
+        }, function() {
+            return sequence("img");
+        });
+        gulp.watch(["README.md"], {
+            cwd: "./"
+        }, function() {
+            return sequence("readme", function() {
+                bs.reload();
+            });
+        });
+        done();
     });
 });
 // open index.html in browser
@@ -366,8 +435,8 @@ gulp.task("open", function(done) {
         })
         .help("?")
         .alias("?", "help")
-        .example("$0 --file index.html --port 3000", "Open index.html in port 3000.")
-        .example("$0 --file readme.md --port 3002", "Open readme.md in port 3002.")
+        .example("$0 --file index.html --port 3000", "Open `index.html` in port 3000.")
+        .example("$0 --file readme.md --port 3002", "Open `readme.md` in port 3002.")
         .argv;
     // open file in the browser
     open(uri(_args.f || _args.file, _args.p || _args.port), {
@@ -382,7 +451,7 @@ gulp.task("open", function(done) {
 gulp.task("status", function(done) {
     fs.readFile(paths.gulp.status, "utf8", function(err, data) {
         if (err) throw err;
-        fs.writeFile(paths.gulp.status, "✔", "utf-8", function(err) {
+        fs.writeFile(paths.gulp.status, "✔", "utf8", function(err) {
             if (err) throw err;
             done();
         });
@@ -424,9 +493,9 @@ gulp.task("git-branch", ["status"], function(done) {
             cleanup(function(exit_code, signal) {
                 // clear the status of gulp to off
                 fs.writeFileSync(paths.gulp.status, "");
+                fs.writeFileSync(paths.gulp.ports, "");
                 branch_name = undefined;
-                if (bs1) bs1.exit();
-                if (bs2) bs2.exit();
+                if (bs) bs.exit();
                 if (process) process.exit();
             });
             done();
@@ -467,16 +536,23 @@ gulp.task("build", ["clean-dist"], function(done) {
 });
 // gulps default task is set to rum the build + watch + browser-sync
 gulp.task("default", function(done) {
-    return find_free_port(3000, 3100, "127.0.0.1", 4, function(err, p1, p2, p3, p4) {
-        // set the ports
-        ports.bs1.app = p1;
-        ports.bs1.ui = p2;
-        ports.bs2.app = p3;
-        ports.bs2.ui = p4;
-        // after getting the free ports, finally run the build task
-        return sequence("build", function() {
-            sequence("watch");
-            done();
+    return find_free_port(3000, 3100, "127.0.0.1", 2, function(err, p1, p2) {
+        fs.open(paths.gulp.ports, "w+", function(err, fd) {
+            if (err) throw err;
+            fs.readFile(paths.gulp.ports, "utf8", function(err, data) {
+                if (err) throw err;
+                // store ports
+                fs.writeFile(paths.gulp.ports, [p1, p2].join(" "), "utf8", function(err) {
+                    if (err) throw err;
+                    // store ports on the browser-sync object itself
+                    bs.__ports__ = [p1, p2]; // [app, ui]
+                    // after getting the free ports, finally run the build task
+                    return sequence("build", function() {
+                        sequence("watch");
+                        done();
+                    });
+                });
+            });
         });
     });
 });
@@ -485,6 +561,39 @@ gulp.task("default", function(done) {
 // * The following tasks are helper tasks and should be modified as needed. *
 // **************************************************************************
 //
+// clear the contents of any ./gulp/.gulp* file
+gulp.task("clear", function(done) {
+    // run yargs
+    var _args = args.usage("Usage: $0 --names [string]")
+        .option("names", {
+            alias: "n",
+            demandOption: true,
+            describe: "Name(s) of what information to clear.",
+            type: "string"
+        })
+        .coerce("names", function(value) {
+            return value.split(" ");
+        })
+        .help("?")
+        .alias("?", "help")
+        .example("$0 --names=\"gulpstatus gulpports\"", "Clear contents of ./gulp/.gulpports and ./gulp/.gulpstatus.")
+        .example("$0 --names=\"gulpstatus\"", "Clear contents of ./gulp/.gulpstatus.")
+        .example("$0 --names gulpports", "Clear contents of ./gulp/.gulpports.")
+        .argv;
+    // get provided parameters
+    var names = _args.n || _args.names;
+    // loop over provided arguments array
+    for (var i = 0, l = names.length; i < l; i++) {
+        var path = paths.gulp[names[i].replace("gulp", "")];
+        // using the flag "w+" will create the file if it does not exists. if
+        // it does exists it will truncate the current file. in effect clearing
+        // if out. which is what is needed.
+        fs.openSync(path, "w+");
+        log(("[complete]")
+            .green + " " + path.yellow + " cleared.");
+    }
+    done();
+});
 // run gulp-jsbeautifier on html, js, css, & json files to clean them
 gulp.task("clean-files", function(done) {
     // this task can only run when gulp is not running as gulps watchers

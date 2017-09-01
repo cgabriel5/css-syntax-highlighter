@@ -74,7 +74,8 @@
             "js": ["libs/**/*.js", "source/*.js", "source/modules/*.js"]
         },
         "gulp": {
-            "status": "./gulp/.gulpstatus"
+            "status": "./gulp/.gulpstatus",
+            "ports": "./gulp/.gulpports"
         }
     },
     "regexp": {

@@ -53,7 +53,8 @@
             }
         },
         "browsers": {
-            "list": ["google-chrome", "google chrome", "chrome", "firefox"]
+            "main": ["google-chrome"],
+            "names": ["google-chrome", "google chrome", "chrome", "firefox"]
         }
     },
     "paths": {
@@ -61,7 +62,7 @@
             "jsapp": ["lib.iife.top.js", "lib.library.top.js", "modules/fn.helpers.js", "modules/constants.js", "modules/fn.core.js", "modules/constructor.js", "lib.library.end.js", "modules/globals.js", "modules/bottom.js", "lib.iife.end.js", "test.js"],
             "jslibs": ["fastclick.js", "libs.init.js"]
         },
-        "order": ["cssapp", "csslibs", "csslibsfolder", "jsapp", "jslibsource", "jslibs", "jslibsfolder", "img", "html", "readme"],
+        "order": ["task-cssapp", "task-csslibs", "task-csslibsfolder", "task-jsapp", "task-jslibsource", "task-jslibs", "task-jslibsfolder", "task-img", "task-html", "task-readme"],
         "tasks": {
             "cssapp": ["normalize.css", "base.css", "styles.css", "helpers.css", "highlighter.css"],
             "csslibs": ["font-awesome-4.7.0/css/font-awesome.css"],
@@ -76,7 +77,8 @@
         "gulp": {
             "status": "./gulp/.gulpstatus",
             "ports": "./gulp/.gulpports"
-        }
+        },
+        "base": "index.html"
     },
     "regexp": {
         "css": {

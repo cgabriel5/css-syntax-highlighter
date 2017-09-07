@@ -1522,6 +1522,15 @@ gulp-minify-html@^1.0.6:
     minimize "^1.5.0"
     through2 "^0.6.1"
 
+gulp-open@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-open/-/gulp-open-2.0.0.tgz#a16f67e95cea8b2061b63a3b8c389bc559b8e1ce"
+  dependencies:
+    colors "^1.1.2"
+    gulp-util "^3.0.2"
+    open "0.0.5"
+    through2 "^2.0.1"
+
 gulp-print@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/gulp-print/-/gulp-print-2.0.1.tgz#1acee58eac8af2d3c4ad3329dbe465758393c414"
@@ -1571,7 +1580,7 @@ gulp-uglify@^2.1.2:
     uglify-save-license "^0.4.1"
     vinyl-sourcemaps-apply "^0.2.0"
 
-gulp-util@*, gulp-util@3.0.8, gulp-util@^3.0.0, gulp-util@^3.0.3, gulp-util@^3.0.4, gulp-util@^3.0.5, gulp-util@^3.0.6, gulp-util@^3.0.8:
+gulp-util@*, gulp-util@3.0.8, gulp-util@^3.0.0, gulp-util@^3.0.2, gulp-util@^3.0.3, gulp-util@^3.0.4, gulp-util@^3.0.5, gulp-util@^3.0.6, gulp-util@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
   dependencies:
@@ -1962,10 +1971,6 @@ is-utf8@^0.2.0:
 is-windows@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/is-windows/-/is-windows-0.2.0.tgz#de1aa6d63ea29dd248737b69f1ff8b8002d2108c"
-
-is-wsl@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/is-wsl/-/is-wsl-1.1.0.tgz#1f16e4aa22b04d1336b66188a66af3c600c3a66d"
 
 isarray@0.0.1:
   version "0.0.1"
@@ -2787,6 +2792,10 @@ ondone@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/ondone/-/ondone-1.0.0.tgz#fb208316d7ac2951bdcc696a7d864bf21af7a008"
 
+open@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/open/-/open-0.0.5.tgz#42c3e18ec95466b6bf0dc42f3a2945c3f0cad8fc"
+
 openurl@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/openurl/-/openurl-1.1.0.tgz#e2f2189d999c04823201f083f0f1a7cd8903187a"
@@ -2797,12 +2806,6 @@ opn@4.0.2:
   dependencies:
     object-assign "^4.0.1"
     pinkie-promise "^2.0.0"
-
-opn@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/opn/-/opn-5.0.0.tgz#f8870d7cd969b218030cb6ce5a1285e795931df3"
-  dependencies:
-    is-wsl "^1.1.0"
 
 optimist@^0.6.1:
   version "0.6.1"

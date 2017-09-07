@@ -10,8 +10,14 @@ var shorthand = require("gulp-shorthand");
 var concat = require("gulp-concat");
 var minify_html = require("gulp-minify-html");
 var clean_css = require("gulp-clean-css");
+var open = require("gulp-open");
+// -------------------------------------
+// // Non es-uglify
+// Remove the following two lines and uncomment the
+// following lines if uglify-es is needed.
 var uglify = require("gulp-uglify");
 var beautify = require("gulp-jsbeautifier");
+// -------------------------------------
 // // Uncomment for uglify-es
 // var composer = require("gulp-uglify/composer");
 // var uglify = composer(require("uglify-es"), console);
@@ -27,7 +33,6 @@ var find_free_port = require("find-free-port");
 var gulpif = require("gulp-if");
 var print = require("gulp-print");
 var mds = require("markdown-styles");
-var open = require("opn");
 var sequence = require("run-sequence");
 var pump = require("pump");
 var args = require("yargs");
@@ -48,6 +53,7 @@ var time = utils.time;
 var notify = utils.notify;
 var gulp = utils.gulp;
 var uri = utils.uri;
+var browser = utils.browser;
 // -------------------------------------
 var bs = browser_sync.create("localhost");
 //
@@ -236,8 +242,8 @@ gulp.task("task-watch", function(done) {
     });
     // start browser-sync
     bs.init({
-        browser: options.browsers.main,
-        proxy: uri(paths.base), // uri("markdown/preview/README.html"),
+        browser: browser,
+        proxy: uri(paths.index), // uri("markdown/preview/README.html"),
         port: bs.__ports__[0],
         ui: {
             port: bs.__ports__[1]
@@ -577,6 +583,27 @@ gulp.task("helper-clear", function(done) {
     }
     done();
 });
+/**
+ * @description [Opens the provided file in the user's browser.]
+ * @param  {String}   file     [The file to open.]
+ * @param  {Number}   port     [The port to open on.]
+ * @param  {Function} callback [The Gulp task callback to run.]
+ * @return {Undefined}         [Nothing is returned.]
+ */
+function open_file_in_browser(file, port, callback) {
+    pump([gulp.src(file, {
+            cwd: "./",
+            dot: true
+        }),
+        open({
+            app: browser,
+            uri: uri(file, port)
+        })
+    ], function() {
+        notify("File opened!");
+        callback();
+    });
+};
 // open index.html in browser
 gulp.task("helper-open", function(done) {
     // run yargs
@@ -589,20 +616,37 @@ gulp.task("helper-open", function(done) {
         })
         .option("port", {
             alias: "p",
-            demandOption: true,
+            demandOption: false,
             describe: "The port to open browser in.",
             type: "number"
         })
         .example("$0 --file index.html --port 3000", "Open index.html in port 3000.")
         .argv;
-    // open file in the browser
-    open(uri(_args.f || _args.file, _args.p || _args.port), {
-            app: options.browsers.main
-        })
-        .then(function() {
-            notify("File opened!");
-            done();
+    // get the command line arguments from yargs
+    var file = _args.f || _args.file;
+    var port = _args.p || _args.port;
+    // if port is provided use that
+    if (port) {
+        open_file_in_browser(file, port, done);
+    } else { // else get the used port, if any
+        // get the ports from .gulpports
+        fs.open(paths.gulp.ports, "r", function(err, fd) {
+            if (err) throw err;
+            fs.readFile(paths.gulp.ports, "utf8", function(err, data) {
+                if (err) throw err;
+                // if file is empty
+                if (!data.length) {
+                    log(("[warning]")
+                        .yellow + " No ports are in use.");
+                    return done();
+                }
+                // file is not empty...extract ports
+                var ports = data.split(" ");
+                // open file in the browser
+                open_file_in_browser(file, ports[0], done);
+            });
         });
+    }
 });
 // print the status of gulp (is it running or not?)
 gulp.task("helper-status", function(done) {

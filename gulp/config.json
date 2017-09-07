@@ -51,10 +51,6 @@
                 "unescape_strings": false,
                 "wrap_line_length": 0
             }
-        },
-        "browsers": {
-            "main": ["google-chrome"],
-            "names": ["google-chrome", "google chrome", "chrome", "firefox"]
         }
     },
     "paths": {
@@ -78,7 +74,7 @@
             "status": "./gulp/.gulpstatus",
             "ports": "./gulp/.gulpports"
         },
-        "base": "index.html"
+        "index": "index.html"
     },
     "regexp": {
         "css": {

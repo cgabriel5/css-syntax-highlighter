@@ -1,3 +1,4 @@
+var os = require("os");
 var path = require("path");
 // -------------------------------------
 var path_offset = "../";
@@ -8,6 +9,16 @@ var notifier = require(modules_path + "node-notifier");
 var format_date = require(modules_path + "dateformat");
 var colors = require(modules_path + "colors");
 // -------------------------------------
+/**
+ * @description [Detects the default Google Chrome browser based on OS. Falls back to "firefox".]
+ * @source [Lifted from https://github.com/stevelacy/gulp-open]
+ * @return {String} [The browser name.]
+ */
+var browser = function() {
+    var platform = os.platform();
+    // linux (else) darwin (else) windows (else) firefox
+    return ((platform === "linux") ? "google-chrome" : (platform === "darwin" ? "google chrome" : (platform === "win32" ? "chrome" : "firefox")));
+};
 /**
  * @description [Creates a Gulp like time formated, colored string.]
  * @return {String} [The time formated, colored, Gulp like string.]
@@ -109,6 +120,7 @@ function format(template, data) {
     });
 }
 // export functions
+exports.browser = browser();
 exports.time = time;
 exports.log = log;
 exports.notify = notify;
